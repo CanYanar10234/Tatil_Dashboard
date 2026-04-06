@@ -121,10 +121,15 @@
   .city-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
   .card-flag {
     position: absolute; top: 12px; left: 12px;
-    font-size: 34px; z-index: 2;
-    background: rgba(0,0,0,0.6); border-radius: 10px; padding: 4px 10px;
+    z-index: 2;
+    background: rgba(0,0,0,0.6); border-radius: 10px; padding: 6px 10px;
     backdrop-filter: blur(4px);
-    line-height: 1.2;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-flag img {
+    width: 36px; height: 24px; object-fit: cover; border-radius: 3px;
+    display: block;
   }
   .card-badge {
     position: absolute; top: 12px; right: 12px;
@@ -345,7 +350,7 @@
   </div>
   <div class="header-overlay">
     <h1>Tatil Planlama Dashboard</h1>
-    <p>Mayıs 2026 — İzmir'den gidiş-dönüş, 2 kişi, 4-6 gun</p>
+    <p>Mayıs 2026 — İzmir'den gidiş-dönüş, 2 kişi, 4-6 gün</p>
     <div class="header-meta">
       <span>Bütçe: maks 70.000 TL</span>
       <span>Kalkış: İzmir (ADB)</span>
@@ -367,7 +372,7 @@
   <!-- OVERVIEW TAB -->
   <div id="tab-overview" class="tab-content active">
     <div class="info-box">
-      <strong>Fiyat Notu:</strong> Yurt disi destinasyonlar için sadece direkt uçuşlar dahil edilmiştir (aktarmalı uçuş yok). Türkiye içi destinasyonlara araba kiralanarak gidilir ve tatil boyunca kullanılır. Konaklama fiyatları lüks Airbnb seviyesinde hesaplanmıştır (otel yok). Yeme-içme bütçeleri lüks restoran/kafe seviyesinde (2 kişi için). Gerçek fiyatlar tarih ve müsaitliğe göre değişebilir.
+      <strong>Fiyat Notu:</strong> Yurt dışı destinasyonlar için sadece direkt uçuşlar dahil edilmiştir (aktarmalı uçuş yok). Türkiye içi destinasyonlara araba kiralanarak gidilir ve tatil boyunca kullanılır. Konaklama fiyatları lüks Airbnb seviyesinde hesaplanmıştır (otel yok). Yeme-içme bütçeleri lüks restoran/kafe seviyesinde (2 kişi için). Gerçek fiyatlar tarih ve müsaitliğe göre değişebilir.
     </div>
 
     <div class="filter-bar">
@@ -385,7 +390,7 @@
         <span class="range-val" id="cafeVal">0+</span>
       </div>
       <div>
-        <label>Maks Toplam Bütçe (4 gun, 2 kişi):</label>
+        <label>Maks Toplam Bütçe (4 gün, 2 kişi):</label>
         <input type="range" id="filterBudget" min="5000" max="70000" value="70000" step="1000" oninput="applyFilters()">
         <span class="range-val" id="budgetVal">70.000 TL</span>
       </div>
@@ -395,8 +400,8 @@
           <option value="score">Genel Skor</option>
           <option value="cost">Bütçeye Göre</option>
           <option value="cafe">Kafe Skoru</option>
-          <option value="nightlife">Gece Hayati</option>
-          <option value="safety">Guvenlik</option>
+          <option value="nightlife">Gece Hayatı</option>
+          <option value="safety">Güvenlik</option>
           <option value="sightseeing">Gezilecek Yer</option>
         </select>
       </div>
@@ -418,7 +423,7 @@
   <!-- CHARTS TAB -->
   <div id="tab-charts" class="tab-content">
     <div style="margin-bottom:20px">
-      <h3 style="font-size:15px;margin-bottom:12px;">Radar Karşılaştırma — Sehir sec (maks 4):</h3>
+      <h3 style="font-size:15px;margin-bottom:12px;">Radar Karşılaştırma — Şehir seç (maks 4):</h3>
       <div class="radar-controls" id="radarControls"></div>
     </div>
     <div class="charts-grid">
@@ -427,15 +432,15 @@
         <canvas id="radarChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Toplam Maliyet Karşılaştırma (2 kişi, 4 gun)</h3>
+        <h3>Toplam Maliyet Karşılaştırma (2 kişi, 4 gün)</h3>
         <canvas id="costChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Maliyet Dagilimi (Ulaşım / Konaklama / Yeme-Icme)</h3>
+        <h3>Maliyet Dağılımı (Ulaşım / Konaklama / Yeme-İçme)</h3>
         <canvas id="stackedChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Deger Analizi: Skor / Maliyet Orani</h3>
+        <h3>Değer Analizi: Skor / Maliyet Oranı</h3>
         <canvas id="valueChart"></canvas>
       </div>
     </div>
@@ -444,9 +449,9 @@
   <!-- BUDGET TAB -->
   <div id="tab-budget" class="tab-content">
     <div class="dur-toggle">
-      <button class="dur-btn active" onclick="setDuration(4)">4 Gun</button>
-      <button class="dur-btn" onclick="setDuration(5)">5 Gun</button>
-      <button class="dur-btn" onclick="setDuration(6)">6 Gun</button>
+      <button class="dur-btn active" onclick="setDuration(4)">4 Gün</button>
+      <button class="dur-btn" onclick="setDuration(5)">5 Gün</button>
+      <button class="dur-btn" onclick="setDuration(6)">6 Gün</button>
     </div>
     <div class="calc-grid" id="calcGrid"></div>
   </div>
@@ -456,7 +461,7 @@
     <h3 style="margin-bottom:16px;font-size:16px;">Mayıs Ayi Ortalama Hava Durumu & Vize Bilgisi</h3>
     <div class="weather-grid" id="weatherGrid"></div>
     <div style="margin-top:24px" class="info-box">
-      <strong>Vize Notu:</strong> Tum Balkan destinasyonlari (Sirbistan, Karadag, Bosna Hersek, Arnavutluk) TC vatandaslarina vizesiz. Türkiye içi pasaport/kimlik yeterli.
+      <strong>Vize Notu:</strong> Tüm Balkan destinasyonları (Sırbistan, Karadağ, Bosna Hersek, Arnavutluk) TC vatandaşlarına vizesiz. Türkiye içi pasaport/kimlik yeterli.
     </div>
   </div>
 </div>
@@ -481,81 +486,81 @@ const cities = [
   {
     id: 'belgrad',
     name: 'Belgrad',
-    country: 'Sirbistan',
+    country: 'Sırbistan',
     region: 'balkan',
-    flag: '\u{1F1F7}\u{1F1F8}',
+    flag: 'rs',
     img: 'https://images.unsplash.com/photo-1682595824983-6fafae867e47?w=600&h=300&fit=crop',
     scores: { cafe: 9, safety: 6.5, nightlife: 10, sightseeing: 8, nature: 4, food: 8, beauty: 8 },
     weather: { temp: '18-25°C', desc: 'Ilik, ara sira yagmurlu', icon: '\u{26C5}' },
-    visa: 'Vizesiz (90 gun)',
+    visa: 'Vizesiz (90 gün)',
     flightDuration: '1s 40dk',
     flights: [
       { airline: 'AJet', type: 'Direkt', dates: '20 May G - 24 May D', price: 8600, perPerson: true, note: 'Direkt uçuş, 1s 40dk' },
       { airline: 'AJet', type: 'Direkt', dates: '22 May G - 26 May D', price: 9200, perPerson: true, note: 'Direkt uçuş, 1s 40dk' }
     ],
     accommodation: [
-      { type: 'Airbnb (Stari Grad, lüks daire)', pricePerNight: 2200, note: 'Dorcol/Stari Grad, tam donanmli, merkezi konum' }
+      { type: 'Airbnb (Stari Grad, lüks daire)', pricePerNight: 2200, note: 'Dorcol/Stari Grad, tam donanımlı, merkezi konum' }
     ],
     dailyFood: 2000,
     dailyTransport: 400,
     topPlaces: [
-      { icon: '\u{1F3F0}', name: 'Kalemegdan Kalesi & Parkı', desc: 'Sava-Tuna birlesimi manzarasi' },
+      { icon: '\u{1F3F0}', name: 'Kalemegdan Kalesi & Parkı', desc: 'Sava-Tuna birleşimi manzarası' },
       { icon: '\u{1F6B6}', name: 'Knez Mihailova Caddesi', desc: 'Ana yaya caddesi, kafeler ve dükkanlar' },
       { icon: '\u{1F3DB}', name: 'Sveti Sava Katedrali', desc: 'Dunyanin en büyük Ortodoks katedrallerinden' },
-      { icon: '\u{1F3B5}', name: 'Skadarlija', desc: 'Bohem mahallesi, canli muzik ve restoranlar' },
-      { icon: '\u{1F6A2}', name: 'Splavovi (Nehir Barlari)', desc: 'Belgrad\'in meşhur yüzen gece kulüpleri' }
+      { icon: '\u{1F3B5}', name: 'Skadarlija', desc: 'Bohem mahallesi, canlı müzik ve restoranlar' },
+      { icon: '\u{1F6A2}', name: 'Splavovi (Nehir Barları)', desc: 'Belgrad\'in meşhur yüzen gece kulüpleri' }
     ],
     cafes: [
       { name: 'Aviator Coffee Explorer', note: 'Specialty coffee, WiFi, laptop dostu' },
-      { name: 'Koffein', note: 'Birden fazla subesi, hizli WiFi' },
+      { name: 'Koffein', note: 'Birden fazla şubesi, hızlı WiFi' },
       { name: 'Smart Office Coworking', note: 'Günlük ~€10, 24/7 erisim' },
       { name: 'Nova Iskra', note: 'Yaratici coworking, toplanti odalari' }
     ],
-    description: 'Balkan\'in en canli sehri. 24 saat yasayan kafe kulturu, meşhur gece hayati (splavovi), zengin tarihi doku. Digital nomadlar için mukemmel altyapi. Yemek fiyatları cok uygun, özellikle Skadarlija bölgesinde otantik Sirp mutfagi denenmeli.'
+    description: 'Balkan\'ın en canlı şehri. 24 saat yaşayan kafe kültürü, meşhur gece hayatı (splavovi), zengin tarihi doku. Digital nomadlar için mükemmel altyapı. Yemek fiyatları çok uygun, özellikle Skadarlija bölgesinde otantik Sırp mutfağı denenmeli.'
   },
   {
     id: 'kotor',
     name: 'Kotor',
-    country: 'Karadag',
+    country: 'Karadağ',
     region: 'balkan',
-    flag: '\u{1F1F2}\u{1F1EA}',
+    flag: 'me',
     img: 'https://images.unsplash.com/photo-1537075283550-47841ccd5795?w=600&h=300&fit=crop',
     scores: { cafe: 5.5, safety: 7.5, nightlife: 5, sightseeing: 9, nature: 9.5, food: 7, beauty: 9.5 },
-    weather: { temp: '19-26°C', desc: 'Gunesli, hafif ruzgarli', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Vizesiz (90 gun)',
+    weather: { temp: '19-26°C', desc: 'Güneşli, hafif rüzgarlı', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Vizesiz (90 gün)',
     flightDuration: '~5.5s (IST\'den)',
     flights: [
       { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5500, perPerson: true, note: 'İzmir\'den direkt uçuş yok, İstanbul IST-TIV direkt' }
     ],
     accommodation: [
-      { type: 'Airbnb (korfez manzaralı)', pricePerNight: 2500, note: 'Kotor korfezi manzaralı lüks daire, Old Town yakını' }
+      { type: 'Airbnb (körfez manzaralı)', pricePerNight: 2500, note: 'Kotor körfezi manzaralı lüks daire, Old Town yakını' }
     ],
     dailyFood: 2200,
     dailyTransport: 450,
     topPlaces: [
-      { icon: '\u{1F3F0}', name: 'Kotor Kalesi (San Giovanni)', desc: '1350 basamak, korfez manzarasi' },
-      { icon: '\u{1F3D8}', name: 'Kotor Eski Sehir (UNESCO)', desc: 'Ortaçağ surlarla çevrili taş sokaklar' },
-      { icon: '\u{26F5}', name: 'Kotor Korfezi Tekne Turu', desc: 'Perast, Our Lady of Rocks adasi' },
-      { icon: '\u{1F3D6}', name: 'Budva Plajlari', desc: '30dk mesafede, kumlu plajlar' },
-      { icon: '\u{26F0}', name: 'Lovcen Milli Parki', desc: 'Dağ yürüyüşü, panoramik manzara' }
+      { icon: '\u{1F3F0}', name: 'Kotor Kalesi (San Giovanni)', desc: '1350 basamak, körfez manzarası' },
+      { icon: '\u{1F3D8}', name: 'Kotor Eski Şehir (UNESCO)', desc: 'Ortaçağ surlarla çevrili taş sokaklar' },
+      { icon: '\u{26F5}', name: 'Kotor Körfezi Tekne Turu', desc: 'Perast, Our Lady of Rocks adası' },
+      { icon: '\u{1F3D6}', name: 'Budva Plajları', desc: '30dk mesafede, kumlu plajlar' },
+      { icon: '\u{26F0}', name: 'Lovćen Milli Parkı', desc: 'Dağ yürüyüşü, panoramik manzara' }
     ],
     cafes: [
       { name: 'Forza Cafe', note: 'Eski şehirde, WiFi var ama hiz orta' },
       { name: 'Bokun Bistro', note: 'Modern mekan, laptop dostu' },
       { name: 'NEST Coworking (Podgorica)', note: '1.5 saat uzakta ama profesyonel ortam' }
     ],
-    description: 'UNESCO Dunya Mirasi listesinde, nefes kesen korfez manzarasiyla Avrupa\'nin gizli mucevheri. Kotor Kalesi\'ne tirmanis mutlaka yapilmali. Kafe/coworking altyapisi sinirli — calismak için Airbnb veya otel WiFi\'ina guvenmeniz gerekebilir. Ama dogasi ve tarihi dokusuyla gorsel soleni garanti.'
+    description: 'UNESCO Dünya Mirası listesinde, nefes kesen körfez manzarasıyla Avrupa\'nın gizli mücevheri. Kotor Kalesi\'ne tırmanış mutlaka yapılmalı. Kafe/coworking altyapısı sınırlı — çalışmak için Airbnb veya otel WiFi\'ına güvenmeniz gerekebilir. Ama doğası ve tarihi dokusuyla görsel şöleni garanti.'
   },
   {
     id: 'saraybosna',
     name: 'Saraybosna',
     country: 'Bosna Hersek',
     region: 'balkan',
-    flag: '\u{1F1E7}\u{1F1E6}',
+    flag: 'ba',
     img: 'https://images.unsplash.com/photo-1570831709673-03320e9d734f?w=600&h=300&fit=crop',
     scores: { cafe: 7, safety: 7.5, nightlife: 6, sightseeing: 9, nature: 7, food: 8.5, beauty: 8.5 },
-    weather: { temp: '15-23°C', desc: 'Ilik, yagmur ihtimali', icon: '\u{1F326}' },
-    visa: 'Vizesiz (90 gun)',
+    weather: { temp: '15-23°C', desc: 'Ilık, yağmur ihtimali', icon: '\u{1F326}' },
+    visa: 'Vizesiz (90 gün)',
     flightDuration: '~4.5s (IST\'den)',
     flights: [
       { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5800, perPerson: true, note: 'İzmir\'den direkt uçuş yok, İstanbul IST-SJJ direkt' }
@@ -566,97 +571,97 @@ const cities = [
     dailyFood: 1800,
     dailyTransport: 350,
     topPlaces: [
-      { icon: '\u{1F54C}', name: 'Baščaršija (Eski Carsi)', desc: 'Osmanlı dönemi çarşısı, el sanatları' },
-      { icon: '\u{1F3DB}', name: 'Latin Koprüsü', desc: 'I. Dunya Savasi\'nin basladigi yer' },
+      { icon: '\u{1F54C}', name: 'Baščaršija (Eski Çarşı)', desc: 'Osmanlı dönemi çarşısı, el sanatları' },
+      { icon: '\u{1F3DB}', name: 'Latin Koprüsü', desc: 'I. Dünya Savaşı\'nin basladigi yer' },
       { icon: '\u{1F54C}', name: 'Gazi Husrev Bey Camii', desc: '16. yuzyil Osmanlı mimari saheseri' },
-      { icon: '\u{26F0}', name: 'Trebevic Dag Teleferigi', desc: 'Sehir panoramasi, yürüyüş parkurlari' },
-      { icon: '\u{1F3DB}', name: 'Tunel Muzesi', desc: 'Bosna Savasi dönemi yasam tuneli' }
+      { icon: '\u{26F0}', name: 'Trebevic Dağ Teleferiği', desc: 'Şehir panoraması, yürüyüş parkurları' },
+      { icon: '\u{1F3DB}', name: 'Tünel Müzesi', desc: 'Bosna Savaşı dönemi yaşam tüneli' }
     ],
     cafes: [
-      { name: 'Kaffe Tansen', note: 'Specialty coffee, laptop dostu, hizli WiFi' },
-      { name: 'Ministry of Cejf', note: 'Modern kafe, coworking alani' },
+      { name: 'Kaffe Tansen', note: 'Specialty coffee, laptop dostu, hızlı WiFi' },
+      { name: 'Ministry of Cejf', note: 'Modern kafe, coworking alanı' },
       { name: 'Kawa Coffee', note: 'Baščaršija yakınında, sakin ortam' }
     ],
-    description: 'Dogu ile Bati\'nin bulusma noktası. Osmanlı, Avusturya-Macaristan ve modern etkilerin ic ice gectigi essiz atmosfer. Baščaršija\'da Bosna kahvesi içmek başlı başına bir deneyim. En ucuz Balkan destinasyonu — yemek ve konaklama fiyatları cok makul. Tarihi ağır ama o kadar da etkileyici.'
+    description: 'Doğu ile Batı\'nin buluşma noktası. Osmanlı, Avusturya-Macaristan ve modern etkilerin iç içe geçtiği eşsiz atmosfer. Baščaršija\'da Bosna kahvesi içmek başlı başına bir deneyim. En ucuz Balkan destinasyonu — yemek ve konaklama fiyatları çok makul. Tarihi ağır ama o kadar da etkileyici.'
   },
   {
     id: 'tiran',
     name: 'Tiran',
     country: 'Arnavutluk',
     region: 'balkan',
-    flag: '\u{1F1E6}\u{1F1F1}',
+    flag: 'al',
     img: 'https://images.unsplash.com/photo-1632353913765-9b56b7b4bd55?w=600&h=300&fit=crop',
     scores: { cafe: 8, safety: 5.5, nightlife: 7, sightseeing: 6, nature: 6.5, food: 7, beauty: 6.5 },
-    weather: { temp: '19-27°C', desc: 'Sicak ve gunesli', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Vizesiz (90 gun)',
+    weather: { temp: '19-27°C', desc: 'Sıcak ve güneşli', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Vizesiz (90 gün)',
     flightDuration: '~3.5s (IST\'den)',
     flights: [
       { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5000, perPerson: true, note: 'İzmir\'den direkt uçuş yok, İstanbul IST-TIA direkt' }
     ],
     accommodation: [
-      { type: 'Airbnb (Blloku, lüks)', pricePerNight: 1700, note: 'Blloku mahallesi, yeni bina, tam donanmli' }
+      { type: 'Airbnb (Blloku, lüks)', pricePerNight: 1700, note: 'Blloku mahallesi, yeni bina, tam donanımlı' }
     ],
     dailyFood: 1800,
     dailyTransport: 350,
     topPlaces: [
-      { icon: '\u{1F3D9}', name: 'Skanderbeg Meydani', desc: 'Sehrin kalbi, renkli binalar' },
-      { icon: '\u{1F3A8}', name: 'Bunk\'Art 1 & 2', desc: 'Eski sinaklar sanat müzesine dönüşmüş' },
-      { icon: '\u{1F6CD}', name: 'Blloku Mahallesi', desc: 'Kafeler, barlar, sokak sanati' },
-      { icon: '\u{26F0}', name: 'Dajti Dagi Teleferigi', desc: 'Sehir panoramasi, restoran' },
-      { icon: '\u{1F3D6}', name: 'Durrës Plaji (35dk)', desc: 'En yakin plaj secenegi' }
+      { icon: '\u{1F3D9}', name: 'Skanderbeg Meydanı', desc: 'Şehrin kalbi, renkli binalar' },
+      { icon: '\u{1F3A8}', name: 'Bunk\'Art 1 & 2', desc: 'Eski sınaklar sanat müzesine dönüşmüş' },
+      { icon: '\u{1F6CD}', name: 'Blloku Mahallesi', desc: 'Kafeler, barlar, sokak sanatı' },
+      { icon: '\u{26F0}', name: 'Dajti Dağı Teleferiği', desc: 'Şehir panoraması, restoran' },
+      { icon: '\u{1F3D6}', name: 'Durrës Plajı (35dk)', desc: 'En yakın plaj seçeneği' }
     ],
     cafes: [
       { name: 'Destil Creative Hub', note: 'Coworking + kafe, nomad toplulugu aktif' },
       { name: 'Coolab', note: 'Profesyonel coworking, günlük ~€8' },
       { name: 'Sophie Caffe (Blloku)', note: 'Genis mekan, WiFi, priz bol' },
-      { name: 'Mon Cheri', note: 'Blloku\'nun populer calisma mekani' }
+      { name: 'Mon Cheri', note: 'Blloku\'nun popüler çalışma mekanı' }
     ],
-    description: 'Avrupa\'nin en hizli degisen sehri. Blloku mahallesi digital nomadlarin yeni gozdesi — her kosebasinda kafe, coworking ve bar. Fiyatlar Balkan\'in en uygunlarinda. Estetik olarak diger şehirler kadar gösterisli değil ama enerjisi ve kafesi calisma tatili için ideal. Durrës plajı 35dk mesafede bonus.'
+    description: 'Avrupa\'nın en hızlı değişen şehri. Blloku mahallesi digital nomadların yeni gözdesi — her köşebaşında kafe, coworking ve bar. Fiyatlar Balkan\'ın en uygunlarında. Estetik olarak diğer şehirler kadar gösterişli değil ama enerjisi ve kafesi çalışma tatili için ideal. Durrës plajı 35dk mesafede bonus.'
   },
   {
     id: 'antalya',
     name: 'Antalya (Kaleiçi)',
     country: 'Türkiye',
     region: 'türkiye',
-    flag: '\u{1F1F9}\u{1F1F7}',
+    flag: 'tr',
     img: 'https://images.unsplash.com/photo-1768123679333-844df7e7ad1a?w=600&h=300&fit=crop',
     scores: { cafe: 6.5, safety: 6.5, nightlife: 7, sightseeing: 9, nature: 8, food: 9, beauty: 9 },
-    weather: { temp: '20-28°C', desc: 'Sicak, gunesli, ideal', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Yurt ici',
+    weather: { temp: '20-28°C', desc: 'Sıcak, güneşli, ideal', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt içi',
     flightDuration: 'Arabayla ~6s',
     flights: [
       { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tüm tatil boyunca', price: 8000, perPerson: false, note: 'İzmir-Antalya ~6s sürüş, 4 gün kiralama + yakıt dahil' }
     ],
     accommodation: [
-      { type: 'Airbnb (Kaaleici, tas ev)', pricePerNight: 2800, note: 'Restore edilmis tarihi tas ev, bahceli, deniz yakını' }
+      { type: 'Airbnb (Kaleiçi, taş ev)', pricePerNight: 2800, note: 'Restore edilmiş tarihi taş ev, bahçeli, deniz yakını' }
     ],
     dailyFood: 2800,
     dailyTransport: 0,
     topPlaces: [
-      { icon: '\u{1F3DB}', name: 'Kaleiçi Eski Sehir', desc: 'Roma, Bizans, Osmanlı katmanlari' },
-      { icon: '\u{1F3D6}', name: 'Konyaalti Plaji', desc: 'Sehir merkezinde uzun sahil seridi' },
+      { icon: '\u{1F3DB}', name: 'Kaleiçi Eski Şehir', desc: 'Roma, Bizans, Osmanlı katmanları' },
+      { icon: '\u{1F3D6}', name: 'Konyaaltı Plajı', desc: 'Şehir merkezinde uzun sahil şeridi' },
       { icon: '\u{1F3DB}', name: 'Aspendos Antik Tiyatro', desc: 'Dunyanin en iyi korunmus Roma tiyatrosu' },
-      { icon: '\u{1F4A7}', name: 'Duden Selalesi', desc: 'Denize dokulen selale' },
+      { icon: '\u{1F4A7}', name: 'Düden Şelalesi', desc: 'Denize dökülen şelale' },
       { icon: '\u{1F3DB}', name: 'Perge / Side Antik Kent', desc: 'Gunubirlik antik kent gezisi' }
     ],
     cafes: [
       { name: 'Simena Cafe', note: 'Kaleiçi içinde, deniz manzaralı, WiFi' },
       { name: 'Coffee Lab Antalya', note: 'Specialty coffee, modern mekan' },
       { name: 'ATÖLYE Coworking', note: 'Profesyonel coworking, günlük ~150 TL' },
-      { name: 'Pia Botanica', note: 'Bahceli kafe, sakin ortam' }
+      { name: 'Pia Botanica', note: 'Bahçeli kafe, sakin ortam' }
     ],
-    description: 'Turkiye\'nin en populer tatil sehri ama Kaleiçi bölgesinde tamamen farkli bir deneyim: Roma dönemi surlar, dar sokaklar, tarihi tas evler. İzmir\'den arabayla ~6 saatlik keyifli yolculuk. Antik kentler, selale, plaj hepsi yakin. Yemek cesitliligi ve kalitesi ust duzey. Kafe altyapisi gelismekte ama Belgrad seviyesinde degil.'
+    description: 'Türkiye\'nin en popüler tatil şehri ama Kaleiçi bölgesinde tamamen farklı bir deneyim: Roma dönemi surlar, dar sokaklar, tarihi taş evler. İzmir\'den arabayla ~6 saatlik keyifli yolculuk. Antik kentler, şelale, plaj hepsi yakın. Yemek çeşitliliği ve kalitesi üst düzey. Kafe altyapısı gelişmekte ama Belgrad seviyesinde değil.'
   },
   {
     id: 'bodrum',
     name: 'Bodrum',
     country: 'Türkiye',
     region: 'türkiye',
-    flag: '\u{1F1F9}\u{1F1F7}',
+    flag: 'tr',
     img: 'https://images.unsplash.com/photo-1583061386694-e364c84ba31d?w=600&h=300&fit=crop',
     scores: { cafe: 6, safety: 7.5, nightlife: 9, sightseeing: 7, nature: 8.5, food: 8, beauty: 9 },
-    weather: { temp: '20-27°C', desc: 'Gunesli, hafif ruzgarli', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Yurt ici',
+    weather: { temp: '20-27°C', desc: 'Güneşli, hafif rüzgarlı', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt içi',
     flightDuration: 'Arabayla ~3.5s',
     flights: [
       { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tüm tatil boyunca', price: 6500, perPerson: false, note: 'İzmir-Bodrum ~3.5s sürüş, 4 gün kiralama + yakıt dahil' }
@@ -668,83 +673,83 @@ const cities = [
     dailyTransport: 0,
     topPlaces: [
       { icon: '\u{1F3F0}', name: 'Bodrum Kalesi & Sualti Muzesi', desc: 'St. Peter Kalesi, antik batiklar' },
-      { icon: '\u{1F3D6}', name: 'Bitez Plaji', desc: 'Sakin, surfing, aile dostu' },
+      { icon: '\u{1F3D6}', name: 'Bitez Plajı', desc: 'Sakin, sörf, aile dostu' },
       { icon: '\u{26F5}', name: 'Tekne Turu (12 Ada)', desc: 'Günlük mavi tur, koylar' },
-      { icon: '\u{1F3DB}', name: 'Bodrum Antik Tiyatro', desc: 'Korfez manzaralı amfitiyatro' },
-      { icon: '\u{1F37A}', name: 'Bodrum Bar Sokak', desc: 'Gece hayati merkezi' }
+      { icon: '\u{1F3DB}', name: 'Bodrum Antik Tiyatro', desc: 'Körfez manzaralı amfitiyatro' },
+      { icon: '\u{1F37A}', name: 'Bodrum Bar Sokak', desc: 'Gece hayatı merkezi' }
     ],
     cafes: [
       { name: 'Sait Kirtasiye & Coffee', note: 'Hipster mekan, WiFi, priz' },
       { name: 'Bitez Çalışma Kafeleri', note: 'Sahil kenarinda sakin kafeler' },
       { name: 'Musto Cafe', note: 'Marina manzaralı, laptop dostu' }
     ],
-    description: 'Turkiye\'nin St. Tropez\'i. Mayıs\'ta henüz kalabalık değil, fiyatlar makul. Gece hayati Turkiye\'nin en iyilerinden. Plajlar, koylar, tekne turlari muhtesem. Kafe altyapisi calisma için orta seviye — otel/Airbnb WiFi\'i daha guvenilir. İzmir\'den 40dk uçuş büyük avantaj.'
+    description: 'Türkiye\'nin St. Tropez\'i. Mayıs\'ta henüz kalabalık değil, fiyatlar makul. Gece hayatı Türkiye\'nin en iyilerinden. Plajlar, koylar, tekne turları muhteşem. Kafe altyapısı çalışma için orta seviye — otel/Airbnb WiFi\'i daha güvenilir. İzmir\'den 40dk uçuş büyük avantaj.'
   },
   {
     id: 'alacati',
     name: 'Alaçatı / Çeşme',
     country: 'Türkiye',
     region: 'türkiye',
-    flag: '\u{1F1F9}\u{1F1F7}',
+    flag: 'tr',
     img: 'https://images.unsplash.com/photo-1680622349260-d0f9e83ca972?w=600&h=300&fit=crop',
     scores: { cafe: 7.5, safety: 8.5, nightlife: 7.5, sightseeing: 6.5, nature: 8, food: 9, beauty: 9 },
-    weather: { temp: '20-27°C', desc: 'Gunesli, ruzgarli (sorf için ideal)', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Yurt ici',
+    weather: { temp: '20-27°C', desc: 'Güneşli, rüzgarlı (sörf için ideal)', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt içi',
     flightDuration: 'Arabayla ~1.5s',
     flights: [
       { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tüm tatil boyunca', price: 5500, perPerson: false, note: 'İzmir-Çeşme ~1.5s sürüş, 4 gün kiralama + yakıt dahil' }
     ],
     accommodation: [
-      { type: 'Airbnb (Alaçatı tas ev)', pricePerNight: 3500, note: 'Alaçatı merkez, bahceli tas ev, premium dekorasyon' }
+      { type: 'Airbnb (Alaçatı taş ev)', pricePerNight: 3500, note: 'Alaçatı merkez, bahçeli taş ev, premium dekorasyon' }
     ],
     dailyFood: 3000,
     dailyTransport: 0,
     topPlaces: [
-      { icon: '\u{1F3E0}', name: 'Alaçatı Tas Sokaklari', desc: 'Renkli butikler, galeri, kafeler' },
-      { icon: '\u{1F3C4}', name: 'Alaçatı Surf Merkezi', desc: 'Dunya capinda windsurf spotlari' },
-      { icon: '\u{1F3D6}', name: 'Ilica Plaji', desc: 'Sicak su kaynaklarli kumlu plaj' },
-      { icon: '\u{1F37D}', name: 'Çeşme Balik Restoranlari', desc: 'Taze deniz ürünleri, meyhane kulturu' },
+      { icon: '\u{1F3E0}', name: 'Alaçatı Taş Sokakları', desc: 'Renkli butikler, galeri, kafeler' },
+      { icon: '\u{1F3C4}', name: 'Alaçatı Sörf Merkezi', desc: 'Dünya çapında windsurf spotları' },
+      { icon: '\u{1F3D6}', name: 'Ilıca Plajı', desc: 'Sıcak su kaynaklı kumlu plaj' },
+      { icon: '\u{1F37D}', name: 'Çeşme Balık Restoranları', desc: 'Taze deniz ürünleri, meyhane kültürü' },
       { icon: '\u{1F3B5}', name: 'Çeşme Marina & Barlar', desc: 'Yaz gecelerinin merkezi' }
     ],
     cafes: [
       { name: 'Petra Coffee Roastery', note: 'Specialty coffee, geniş mekan, WiFi' },
       { name: 'Alaçatı Muhallebicisi yanindaki kafeler', note: 'Sokak ustu, laptop dostu' },
-      { name: 'Wild Coffee Alaçatı', note: 'Modern, priz cok, sessiz ortam' }
+      { name: 'Wild Coffee Alaçatı', note: 'Modern, priz çok, sessiz ortam' }
     ],
-    description: 'İzmir\'e en yakin secenek — arabayla sadece 1.5 saat. Alaçatı\'nin taş sokaklari, butik kafeleri ve ruzgarli plajları Mayıs\'ta en güzel halinde (henüz kalabalık degil). Yemek fiyatları diger Turkiye seceneklerinden biraz yüksek ama kalite karsiliigi. Kafe kulturu guclu, calisma için iyi. Araba kiralamayla Çeşme, Ilica, Urla tur yapilabilir.'
+    description: 'İzmir\'e en yakın seçenek — arabayla sadece 1.5 saat. Alaçatı\'nın taş sokakları, butik kafeleri ve rüzgarlı plajları Mayıs\'ta en güzel halinde (henüz kalabalık değil). Yemek fiyatları diğer Türkiye seçeneklerinden biraz yüksek ama kalite karşılığı. Kafe kültürü güçlü, çalışma için iyi. Araba kiralamayla Çeşme, Ilıca, Urla tur yapılabilir.'
   },
   {
     id: 'kas',
     name: 'Kas',
     country: 'Türkiye',
     region: 'türkiye',
-    flag: '\u{1F1F9}\u{1F1F7}',
+    flag: 'tr',
     img: 'https://images.unsplash.com/photo-1660675587832-4dc3ae3147a4?w=600&h=300&fit=crop',
     scores: { cafe: 6, safety: 8.5, nightlife: 5, sightseeing: 8, nature: 10, food: 8, beauty: 9.5 },
-    weather: { temp: '21-28°C', desc: 'Sicak, gunesli, deniz 22°C', icon: '\u{2600}\u{FE0F}' },
-    visa: 'Yurt ici',
+    weather: { temp: '21-28°C', desc: 'Sıcak, güneşli, deniz 22°C', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt içi',
     flightDuration: 'Arabayla ~7s',
     flights: [
       { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tüm tatil boyunca', price: 9000, perPerson: false, note: 'İzmir-Kas ~7s sürüş, 4 gün kiralama + yakıt dahil' }
     ],
     accommodation: [
-      { type: 'Airbnb (deniz manzaralı, lüks)', pricePerNight: 2200, note: 'Terasli, deniz manzaralı, merkeze yurume mesafesi' }
+      { type: 'Airbnb (deniz manzaralı, lüks)', pricePerNight: 2200, note: 'Teraslı, deniz manzaralı, merkeze yürüme mesafesi' }
     ],
     dailyFood: 2500,
     dailyTransport: 0,
     topPlaces: [
       { icon: '\u{1F3DB}', name: 'Likya Kaya Mezarlari', desc: 'Kas\'in simgesi, şehir içinde antik mezarlar' },
-      { icon: '\u{1F3CA}', name: 'Kekova Batin Sehir', desc: 'Tekne turu ile sualti antik şehir' },
-      { icon: '\u{1F3D6}', name: 'Kapitas Plaji', desc: 'Turkiye\'nin en güzel plajlarından' },
+      { icon: '\u{1F3CA}', name: 'Kekova Batık Şehir', desc: 'Tekne turu ile sualtı antik şehir' },
+      { icon: '\u{1F3D6}', name: 'Kapıtaş Plajı', desc: 'Türkiye\'nin en güzel plajlarından' },
       { icon: '\u{1F30A}', name: 'Mavi Magara', desc: 'Tekne ile ulasilan dogal magara' },
       { icon: '\u{1F6B6}', name: 'Likya Yolu Yuruyusleri', desc: 'Dunyanin en iyi 10 yürüyüş rotasindan' }
     ],
     cafes: [
       { name: 'Corner Cafe Kas', note: 'Sahil kenarinda, WiFi, laptop dostu' },
       { name: 'Cafe Mola', note: 'Merkezi konum, sakin ortam' },
-      { name: 'Hideaway Cafe', note: 'Terasli, manzaralı calisma alani' }
+      { name: 'Hideaway Cafe', note: 'Teraslı, manzaralı çalışma alanı' }
     ],
-    description: 'Turkiye\'nin en huzurlu tatil kasabasi. Doga skoru 10/10 — Kapitas Plaji, Kekova Batik Sehir, Likya Yolu hepsi burada. Gece hayati sinirli ama kasaba atmosferi cok samimi. Kafe altyapisi küçük ama yeterli. Dalaman\'dan transfer (2.5s) dezavantaj, ama varildiginda odul büyük. Mayıs\'ta henüz kalabalık değil, fiyatlar makul.'
+    description: 'Türkiye\'nin en huzurlu tatil kasabası. Doğa skoru 10/10 — Kapıtaş Plajı, Kekova Batık Şehir, Likya Yolu hepsi burada. Gece hayatı sınırlı ama kasaba atmosferi çok samimi. Kafe altyapısı küçük ama yeterli. Dalaman\'dan transfer (2.5s) dezavantaj, ama varıldığında ödül büyük. Mayıs\'ta henüz kalabalık değil, fiyatlar makul.'
   }
 ];
 
@@ -764,7 +769,7 @@ function getPreferredFlight(c) {
   // En ucuz değil, mid-range uçuş seçimi (medyan veya 2. en ucuz)
   const prices = c.flights.map(f => f.perPerson ? f.price : f.price / 2).sort((a, b) => a - b);
   if (prices.length >= 3) return prices[Math.floor(prices.length / 2)]; // medyan
-  if (prices.length === 2) return prices[1]; // 2. secenek
+  if (prices.length === 2) return prices[1]; // 2. seçenek
   return prices[0];
 }
 
@@ -787,6 +792,11 @@ function getTotalCost(c, days) {
 
 function formatMoney(n) {
   return n.toLocaleString('tr-TR') + ' TL';
+}
+
+function flagImg(code, size) {
+  size = size || 20;
+  return '<img src="https://flagcdn.com/w40/' + code + '.png" alt="' + code + '" style="width:' + size + 'px;height:' + Math.round(size*0.67) + 'px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:4px">';
 }
 
 function scoreColor(s) {
@@ -825,12 +835,12 @@ function renderCards(data) {
     card.className = 'city-card';
     card.onclick = () => openModal(c.id);
     card.innerHTML = `
-      <div class="card-flag">${c.flag}</div>
+      <div class="card-flag"><img src="https://flagcdn.com/w80/${c.flag}.png" alt="${c.country}"></div>
       <div class="card-badge">${score}/10</div>
       <div class="card-img" style="background-image:url('${c.img}');background:linear-gradient(135deg,#1e1b4b,#312e81) center/cover;background-image:url('${c.img}');background-size:cover;background-position:center"></div>
       <div class="card-body">
         <div class="card-title">${c.name}</div>
-        <div class="card-country">${c.flag} ${c.country} · ${c.flightDuration} · ${c.visa}</div>
+        <div class="card-country">${flagImg(c.flag)} ${c.country} · ${c.flightDuration} · ${c.visa}</div>
         <div class="card-score">
           <span class="score-num" style="color:${scoreColor(score)}">${score}</span>
           <div class="score-bar"><div class="score-fill" style="width:${score*10}%;background:${scoreColor(score)}"></div></div>
@@ -839,7 +849,7 @@ function renderCards(data) {
           <div class="stat"><div class="stat-label">Toplam (4g, 2 kişi)</div><div class="stat-value">${formatMoney(cost4)}</div></div>
           <div class="stat"><div class="stat-label">Ulaşım (2 kişi)</div><div class="stat-value">${formatMoney(getCheapestFlight(c) * 2)}</div></div>
           <div class="stat"><div class="stat-label">Kafe Skoru</div><div class="stat-value" style="color:${scoreColor(c.scores.cafe)}">${c.scores.cafe}/10</div></div>
-          <div class="stat"><div class="stat-label">Gece Hayati</div><div class="stat-value" style="color:${scoreColor(c.scores.nightlife)}">${c.scores.nightlife}/10</div></div>
+          <div class="stat"><div class="stat-label">Gece Hayatı</div><div class="stat-value" style="color:${scoreColor(c.scores.nightlife)}">${c.scores.nightlife}/10</div></div>
         </div>
       </div>
     `;
@@ -881,8 +891,8 @@ function applyFilters() {
 function openModal(id) {
   const c = cities.find(x => x.id === id);
   if (!c) return;
-  document.getElementById('modalTitle').textContent = c.flag + ' ' + c.name;
-  document.getElementById('modalCountry').textContent = c.country + ' · ' + c.visa + ' · Ucus: ' + c.flightDuration;
+  document.getElementById('modalTitle').innerHTML = flagImg(c.flag, 24) + ' ' + c.name;
+  document.getElementById('modalCountry').textContent = c.country + ' · ' + c.visa + ' · Uçuş: ' + c.flightDuration;
 
   let html = `<p style="margin-bottom:20px;color:var(--text-dim);font-size:14px;line-height:1.7">${c.description}</p>`;
 
@@ -901,7 +911,7 @@ function openModal(id) {
   html += '</div>';
 
   // Accommodation
-  html += `<div class="modal-section"><h3>Konaklama Secenekleri (gecelik, 2 kişi)</h3>`;
+  html += `<div class="modal-section"><h3>Konaklama Seçenekleri (gecelik, 2 kişi)</h3>`;
   c.accommodation.forEach(a => {
     html += `<div class="accom-option">
       <div class="accom-type">${a.type}</div>
@@ -914,9 +924,9 @@ function openModal(id) {
   // Daily costs
   html += `<div class="modal-section"><h3>Günlük Harcamalar (2 kişi tahmini)</h3>
     <div class="accom-option">
-      <div class="calc-row"><span>Yeme-içme</span><span>${formatMoney(c.dailyFood)} / gun</span></div>
-      <div class="calc-row"><span>Ulaşım (şehir ici)</span><span>${formatMoney(c.dailyTransport)} / gun</span></div>
-      <div class="calc-row"><span>Toplam günlük</span><span style="font-weight:700">${formatMoney(c.dailyFood + c.dailyTransport)} / gun</span></div>
+      <div class="calc-row"><span>Yeme-içme</span><span>${formatMoney(c.dailyFood)} / gün</span></div>
+      <div class="calc-row"><span>Ulaşım (şehir içi)</span><span>${formatMoney(c.dailyTransport)} / gün</span></div>
+      <div class="calc-row"><span>Toplam günlük</span><span style="font-weight:700">${formatMoney(c.dailyFood + c.dailyTransport)} / gün</span></div>
     </div>
   </div>`;
 
@@ -936,7 +946,7 @@ function openModal(id) {
 
   // Score breakdown
   html += `<div class="modal-section"><h3>Skor Dagilimi</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
-  const labels = { cafe:'Kafe/Coworking', safety:'Guvenlik', nightlife:'Gece Hayati', sightseeing:'Gezilecek Yer', nature:'Doga/Plaj', food:'Yemek Kulturu', beauty:'Genel Guzellik' };
+  const labels = { cafe:'Kafe/Coworking', safety:'Güvenlik', nightlife:'Gece Hayatı', sightseeing:'Gezilecek Yer', nature:'Doğa/Plaj', food:'Yemek Kültürü', beauty:'Genel Güzellik' };
   Object.entries(c.scores).forEach(([k, v]) => {
     html += `<div class="stat"><div class="stat-label">${labels[k]}</div><div class="stat-value" style="color:${scoreColor(v)}">${v}/10</div></div>`;
   });
@@ -959,19 +969,19 @@ function renderCompareTable() {
     { key: 'total6', label: 'Toplam Maliyet (6g)', fn: c => getTotalCost(c, 6), format: formatMoney, lower: true },
     { key: 'flight', label: 'Ulaşım (2 kişi)', fn: c => getCheapestFlight(c) * 2, format: formatMoney, lower: true },
     { key: 'accom', label: 'Konaklama (gece)', fn: c => getCheapestAccom(c), format: formatMoney, lower: true },
-    { key: 'food', label: 'Günlük Yeme-Icme', fn: c => c.dailyFood, format: formatMoney, lower: true },
+    { key: 'food', label: 'Günlük Yeme-İçme', fn: c => c.dailyFood, format: formatMoney, lower: true },
     { key: 'cafe', label: 'Kafe Skoru', fn: c => c.scores.cafe, format: v => v+'/10', lower: false },
-    { key: 'safety', label: 'Guvenlik', fn: c => c.scores.safety, format: v => v+'/10', lower: false },
-    { key: 'nightlife', label: 'Gece Hayati', fn: c => c.scores.nightlife, format: v => v+'/10', lower: false },
+    { key: 'safety', label: 'Güvenlik', fn: c => c.scores.safety, format: v => v+'/10', lower: false },
+    { key: 'nightlife', label: 'Gece Hayatı', fn: c => c.scores.nightlife, format: v => v+'/10', lower: false },
     { key: 'sightseeing', label: 'Gezilecek Yer', fn: c => c.scores.sightseeing, format: v => v+'/10', lower: false },
-    { key: 'nature', label: 'Doga/Plaj', fn: c => c.scores.nature, format: v => v+'/10', lower: false },
-    { key: 'food_s', label: 'Yemek Kulturu', fn: c => c.scores.food, format: v => v+'/10', lower: false },
-    { key: 'beauty', label: 'Guzellik', fn: c => c.scores.beauty, format: v => v+'/10', lower: false },
+    { key: 'nature', label: 'Doğa/Plaj', fn: c => c.scores.nature, format: v => v+'/10', lower: false },
+    { key: 'food_s', label: 'Yemek Kültürü', fn: c => c.scores.food, format: v => v+'/10', lower: false },
+    { key: 'beauty', label: 'Güzellik', fn: c => c.scores.beauty, format: v => v+'/10', lower: false },
     { key: 'overall', label: 'GENEL SKOR', fn: c => getOverallScore(c), format: v => v+'/10', lower: false }
   ];
 
   let headHtml = '<th>Metrik</th>';
-  cities.forEach(c => { headHtml += `<th>${c.flag} ${c.name}</th>`; });
+  cities.forEach(c => { headHtml += `<th>${flagImg(c.flag, 16)} ${c.name}</th>`; });
   document.getElementById('compHead').innerHTML = headHtml;
 
   let bodyHtml = '';
@@ -1011,7 +1021,7 @@ function renderRadarControls() {
   cities.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'radar-btn' + (selectedRadar.includes(c.id) ? ' active' : '');
-    btn.textContent = c.flag + ' ' + c.name;
+    btn.innerHTML = flagImg(c.flag, 16) + ' ' + c.name;
     btn.onclick = () => {
       if (selectedRadar.includes(c.id)) {
         selectedRadar = selectedRadar.filter(x => x !== c.id);
@@ -1028,7 +1038,7 @@ function renderRadarControls() {
 function renderRadar() {
   const ctx = document.getElementById('radarChart').getContext('2d');
   if (radarChart) radarChart.destroy();
-  const labels = ['Kafe', 'Guvenlik', 'Gece Hayati', 'Gezilecek Yer', 'Doga', 'Yemek', 'Guzellik'];
+  const labels = ['Kafe', 'Güvenlik', 'Gece Hayatı', 'Gezilecek Yer', 'Doğa', 'Yemek', 'Güzellik'];
   const datasets = selectedRadar.map((id, i) => {
     const c = cities.find(x => x.id === id);
     return {
@@ -1058,9 +1068,9 @@ function renderCostChart() {
   costChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: sorted.map(c => c.flag + ' ' + c.name),
+      labels: sorted.map(c => c.name),
       datasets: [{
-        label: 'Toplam (4 gun, 2 kişi)',
+        label: 'Toplam (4 gün, 2 kişi)',
         data: sorted.map(c => getTotalCost(c, 4)),
         backgroundColor: sorted.map((c, i) => getTotalCost(c, 4) <= 40000 ? '#22c55e80' : getTotalCost(c, 4) <= 60000 ? '#f59e0b80' : '#ef444480'),
         borderColor: sorted.map((c, i) => getTotalCost(c, 4) <= 40000 ? '#22c55e' : getTotalCost(c, 4) <= 60000 ? '#f59e0b' : '#ef4444'),
@@ -1089,12 +1099,12 @@ function renderStackedChart() {
   stackedChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: sorted.map(c => c.flag + ' ' + c.name),
+      labels: sorted.map(c => c.name),
       datasets: [
         { label: 'Ulaşım (2 kişi)', data: sorted.map(c => getCheapestFlight(c) * 2), backgroundColor: '#6366f1' },
         { label: 'Konaklama (3 gece)', data: sorted.map(c => getCheapestAccom(c) * 3), backgroundColor: '#22c55e' },
-        { label: 'Yeme-Icme (4 gun)', data: sorted.map(c => c.dailyFood * 4), backgroundColor: '#f59e0b' },
-        { label: 'Ulaşım (4 gun)', data: sorted.map(c => c.dailyTransport * 4), backgroundColor: '#ec4899' }
+        { label: 'Yeme-İçme (4 gün)', data: sorted.map(c => c.dailyFood * 4), backgroundColor: '#f59e0b' },
+        { label: 'Ulaşım (4 gün)', data: sorted.map(c => c.dailyTransport * 4), backgroundColor: '#ec4899' }
       ]
     },
     options: {
@@ -1163,11 +1173,11 @@ function renderBudget(days) {
     const card = document.createElement('div');
     card.className = 'calc-card';
     card.innerHTML = `
-      <h4>${c.flag} ${c.name}</h4>
+      <h4>${flagImg(c.flag, 18)} ${c.name}</h4>
       <div class="calc-row"><span>Ulaşım (2 kişi)</span><span>${formatMoney(flight2)}</span></div>
       <div class="calc-row"><span>Konaklama (${days-1} gece, Airbnb)</span><span>${formatMoney(accom)}</span></div>
-      <div class="calc-row"><span>Yeme-Icme (${days} gun)</span><span>${formatMoney(food)}</span></div>
-      <div class="calc-row"><span>Sehir Ici Ulaşım (${days} gun)</span><span>${formatMoney(transport)}</span></div>
+      <div class="calc-row"><span>Yeme-İçme (${days} gün)</span><span>${formatMoney(food)}</span></div>
+      <div class="calc-row"><span>Şehir İçi Ulaşım (${days} gün)</span><span>${formatMoney(transport)}</span></div>
       <div class="calc-total">
         <span>TOPLAM</span>
         <span class="${budgetClass(total)}">${formatMoney(total)}</span>
@@ -1189,7 +1199,7 @@ function renderWeather() {
     card.className = 'weather-card';
     card.innerHTML = `
       <div style="font-size:28px;margin-bottom:4px">${c.weather.icon}</div>
-      <div style="font-weight:600;font-size:14px;margin-bottom:4px">${c.flag} ${c.name}</div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:4px">${flagImg(c.flag, 16)} ${c.name}</div>
       <div class="weather-temp">${c.weather.temp}</div>
       <div class="weather-desc">${c.weather.desc}</div>
       <div style="margin-top:8px"><span class="tag tag-green">${c.visa}</span></div>
