@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tatil Planlama Dashboard — Mayıs 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card-hover: #22263a;
+    --border: #2a2e3f;
+    --text: #e4e4e7;
+    --text-dim: #9ca3af;
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --green: #22c55e;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --teal: #14b8a6;
+    --pink: #ec4899;
+    --radius: 12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-photo {
+    width: 100%; height: 220px;
+    object-fit: cover; object-position: center 30%;
+    display: block;
+    filter: brightness(0.6);
+  }
+  .header-photo-placeholder {
+    width: 100%; height: 220px;
+    background: linear-gradient(135deg, #1e1b4b, #4338ca, #312e81);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: rgba(255,255,255,0.3);
+  }
+  .header-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 32px 40px;
+    background: linear-gradient(to top, rgba(15,17,23,0.95) 0%, rgba(15,17,23,0.6) 50%, rgba(15,17,23,0.1) 100%);
+  }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  .header p { color: var(--text-dim); font-size: 14px; }
+  .header-meta {
+    display: flex; gap: 24px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .header-meta span {
+    background: rgba(99,102,241,0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #a5b4fc;
+    border: 1px solid rgba(99,102,241,0.35);
+    backdrop-filter: blur(8px);
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 24px;
+    background: var(--card); border-radius: var(--radius); padding: 4px;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 10px 20px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; font-weight: 500; white-space: nowrap;
+    transition: all .2s; color: var(--text-dim); border: none; background: none;
+  }
+  .tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+  .tab.active { background: var(--accent); color: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-bar label { font-size: 13px; color: var(--text-dim); }
+  .filter-bar select, .filter-bar input[type=range] {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 12px; border-radius: 8px; font-size: 13px;
+  }
+  .filter-bar input[type=range] { width: 180px; accent-color: var(--accent); }
+  .range-val { font-size: 13px; color: var(--accent); font-weight: 600; min-width: 70px; }
+
+  /* City Cards */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .city-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all .2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .city-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .city-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+  .card-flag {
+    position: absolute; top: 12px; left: 12px;
+    font-size: 34px; z-index: 2;
+    background: rgba(0,0,0,0.6); border-radius: 10px; padding: 4px 10px;
+    backdrop-filter: blur(4px);
+    line-height: 1.2;
+  }
+  .card-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--accent); color: #fff;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .card-img {
+    height: 170px;
+    background-size: cover; background-position: center;
+    position: relative;
+  }
+  .card-img::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 60px; background: linear-gradient(transparent, var(--card));
+  }
+  .card-body { padding: 16px; }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .card-country { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .card-score {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .score-bar {
+    flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .score-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+  .score-num { font-size: 20px; font-weight: 700; min-width: 36px; }
+  .card-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.03);
+    padding: 8px 10px; border-radius: 8px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 14px; font-weight: 600; }
+
+  /* Detail Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 100;
+    justify-content: center; align-items: flex-start;
+    padding: 40px 20px; overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; max-width: 800px; width: 100%;
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .modal-close {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 24px; cursor: pointer; padding: 4px;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; }
+  .modal-section { margin-bottom: 24px; }
+  .modal-section h3 {
+    font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .flight-option {
+    background: rgba(255,255,255,0.03); border-radius: 10px;
+    padding: 14px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid var(--border);
+  }
+  .flight-airline { font-weight: 600; font-size: 14px; }
+  .flight-route { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .flight-price { font-size: 18px; font-weight: 700; color: var(--green); }
+  .flight-price small { font-size: 11px; color: var(--text-dim); display: block; }
+  .accom-option {
+    background: rgba(255,255,255,0.03); border-radius: 10px;
+    padding: 14px; margin-bottom: 8px; border: 1px solid var(--border);
+  }
+  .accom-type { font-weight: 600; font-size: 14px; }
+  .accom-detail { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .accom-price { font-size: 16px; font-weight: 700; color: var(--orange); margin-top: 4px; }
+  .place-list { list-style: none; }
+  .place-list li {
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; display: flex; gap: 8px; align-items: flex-start;
+  }
+  .place-list li:last-child { border-bottom: none; }
+  .place-icon { font-size: 16px; flex-shrink: 0; }
+  .cafe-list li { display: flex; gap: 8px; padding: 6px 0; font-size: 14px; }
+  .cafe-list { list-style: none; }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 11px; margin-right: 4px;
+  }
+  .tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag-orange { background: rgba(245,158,11,0.15); color: var(--orange); }
+  .tag-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .tag-red { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* Comparison Table */
+  .comp-table-wrap { overflow-x: auto; }
+  .comp-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  .comp-table th {
+    text-align: left; padding: 12px; font-weight: 600;
+    background: rgba(99,102,241,0.1); border-bottom: 2px solid var(--accent);
+    white-space: nowrap; position: sticky; top: 0;
+  }
+  .comp-table td {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .comp-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .comp-table .best { color: var(--green); font-weight: 700; }
+  .comp-table .worst { color: var(--red); }
+  .sortable { cursor: pointer; user-select: none; }
+  .sortable:hover { color: var(--accent); }
+  .sort-arrow { margin-left: 4px; font-size: 10px; }
+
+  /* Charts section */
+  .charts-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .chart-card h3 { font-size: 15px; margin-bottom: 16px; font-weight: 600; }
+  .chart-card canvas { max-height: 350px; }
+
+  /* Radar compare */
+  .radar-controls {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .radar-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: none; color: var(--text-dim); font-size: 12px; cursor: pointer;
+    transition: all .2s;
+  }
+  .radar-btn.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  /* Budget calculator */
+  .calc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
+  }
+  .calc-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .calc-card h4 { font-size: 15px; margin-bottom: 12px; }
+  .calc-row {
+    display: flex; justify-content: space-between; padding: 6px 0;
+    font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-total {
+    display: flex; justify-content: space-between; padding: 12px 0;
+    font-size: 16px; font-weight: 700; border-top: 2px solid var(--accent);
+    margin-top: 8px;
+  }
+  .budget-ok { color: var(--green); }
+  .budget-warn { color: var(--orange); }
+  .budget-over { color: var(--red); }
+
+  /* Duration toggle */
+  .dur-toggle {
+    display: flex; gap: 4px; margin-bottom: 20px;
+    background: var(--card); border-radius: 8px; padding: 4px; display: inline-flex;
+  }
+  .dur-btn {
+    padding: 8px 20px; border-radius: 6px; border: none;
+    background: none; color: var(--text-dim); font-size: 13px; cursor: pointer;
+    font-weight: 500;
+  }
+  .dur-btn.active { background: var(--accent); color: #fff; }
+
+  /* Weather */
+  .weather-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
+  }
+  .weather-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px; text-align: center;
+  }
+  .weather-temp { font-size: 24px; font-weight: 700; }
+  .weather-desc { font-size: 12px; color: var(--text-dim); }
+
+  @media (max-width: 768px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .header { padding: 20px; }
+    .container { padding: 16px; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Info box */
+  .info-box {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .info-box strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img id="headerPhoto" class="header-photo" src="couple-photo.jpg" onerror="this.style.display='none';document.getElementById('headerPhotoFallback').style.display='flex'" alt="Biz">
+  <div id="headerPhotoFallback" class="header-photo-placeholder" style="display:none">
+    <span>Fotograf icin: couple-photo.jpg dosyasini ayni klasore kaydedin</span>
+  </div>
+  <div class="header-overlay">
+    <h1>Tatil Planlama Dashboard</h1>
+    <p>Mayis 2026 — Izmir'den gidis-donus, 2 kisi, 4-6 gun</p>
+    <div class="header-meta">
+      <span>Butce: maks 70.000 TL</span>
+      <span>Kalkis: Izmir (ADB)</span>
+      <span>Tarih: 18-31 Mayis 2026</span>
+      <span>Oncelik: Kafe & Calisma</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview')">Genel Bakis</button>
+    <button class="tab" onclick="switchTab('compare')">Karsilastirma Tablosu</button>
+    <button class="tab" onclick="switchTab('charts')">Grafikler</button>
+    <button class="tab" onclick="switchTab('budget')">Butce Hesaplama</button>
+    <button class="tab" onclick="switchTab('weather')">Hava & Vize</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div id="tab-overview" class="tab-content active">
+    <div class="info-box">
+      <strong>Fiyat Notu:</strong> Yurt disi destinasyonlar icin sadece direkt ucuslar dahil edilmistir (aktarmali ucus yok). Turkiye ici destinasyonlara araba kiralanarak gidilir ve tatil boyunca kullanilir. Konaklama fiyatlari luks Airbnb seviyesinde hesaplanmistir (otel yok). Yeme-icme butceleri luks restoran/kafe seviyesinde (2 kisi icin). Gercek fiyatlar tarih ve musaitlige gore degisebilir.
+    </div>
+
+    <div class="filter-bar">
+      <div>
+        <label>Bolge:</label>
+        <select id="filterRegion" onchange="applyFilters()">
+          <option value="all">Hepsi</option>
+          <option value="balkan">Balkan</option>
+          <option value="turkiye">Turkiye</option>
+        </select>
+      </div>
+      <div>
+        <label>Min Kafe Skoru:</label>
+        <input type="range" id="filterCafe" min="0" max="10" value="0" oninput="applyFilters()">
+        <span class="range-val" id="cafeVal">0+</span>
+      </div>
+      <div>
+        <label>Maks Toplam Butce (4 gun, 2 kisi):</label>
+        <input type="range" id="filterBudget" min="5000" max="70000" value="70000" step="1000" oninput="applyFilters()">
+        <span class="range-val" id="budgetVal">70.000 TL</span>
+      </div>
+      <div>
+        <label>Siralama:</label>
+        <select id="sortBy" onchange="applyFilters()">
+          <option value="score">Genel Skor</option>
+          <option value="cost">Butceye Gore</option>
+          <option value="cafe">Kafe Skoru</option>
+          <option value="nightlife">Gece Hayati</option>
+          <option value="safety">Guvenlik</option>
+          <option value="sightseeing">Gezilecek Yer</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+  <!-- COMPARE TAB -->
+  <div id="tab-compare" class="tab-content">
+    <div class="comp-table-wrap">
+      <table class="comp-table" id="compTable">
+        <thead><tr id="compHead"></tr></thead>
+        <tbody id="compBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHARTS TAB -->
+  <div id="tab-charts" class="tab-content">
+    <div style="margin-bottom:20px">
+      <h3 style="font-size:15px;margin-bottom:12px;">Radar Karsilastirma — Sehir sec (maks 4):</h3>
+      <div class="radar-controls" id="radarControls"></div>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Metrik Radar Karsilastirma</h3>
+        <canvas id="radarChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Toplam Maliyet Karsilastirma (2 kisi, 4 gun)</h3>
+        <canvas id="costChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Maliyet Dagilimi (Ulasim / Konaklama / Yeme-Icme)</h3>
+        <canvas id="stackedChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Deger Analizi: Skor / Maliyet Orani</h3>
+        <canvas id="valueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDGET TAB -->
+  <div id="tab-budget" class="tab-content">
+    <div class="dur-toggle">
+      <button class="dur-btn active" onclick="setDuration(4)">4 Gun</button>
+      <button class="dur-btn" onclick="setDuration(5)">5 Gun</button>
+      <button class="dur-btn" onclick="setDuration(6)">6 Gun</button>
+    </div>
+    <div class="calc-grid" id="calcGrid"></div>
+  </div>
+
+  <!-- WEATHER TAB -->
+  <div id="tab-weather" class="tab-content">
+    <h3 style="margin-bottom:16px;font-size:16px;">Mayis Ayi Ortalama Hava Durumu & Vize Bilgisi</h3>
+    <div class="weather-grid" id="weatherGrid"></div>
+    <div style="margin-top:24px" class="info-box">
+      <strong>Vize Notu:</strong> Tum Balkan destinasyonlari (Sirbistan, Karadag, Bosna Hersek, Arnavutluk) TC vatandaslarina vizesiz. Turkiye ici pasaport/kimlik yeterli.
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle" style="font-size:22px"></h2>
+        <p id="modalCountry" style="color:var(--text-dim);font-size:14px"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ============== DATA ==============
+const cities = [
+  {
+    id: 'belgrad',
+    name: 'Belgrad',
+    country: 'Sirbistan',
+    region: 'balkan',
+    flag: '\u{1F1F7}\u{1F1F8}',
+    img: 'https://images.unsplash.com/photo-1682595824983-6fafae867e47?w=600&h=300&fit=crop',
+    scores: { cafe: 9, safety: 6.5, nightlife: 10, sightseeing: 8, nature: 4, food: 8, beauty: 8 },
+    weather: { temp: '18-25°C', desc: 'Ilik, ara sira yagmurlu', icon: '\u{26C5}' },
+    visa: 'Vizesiz (90 gun)',
+    flightDuration: '1s 40dk',
+    flights: [
+      { airline: 'AJet', type: 'Direkt', dates: '20 May G - 24 May D', price: 8600, perPerson: true, note: 'Direkt ucus, 1s 40dk' },
+      { airline: 'AJet', type: 'Direkt', dates: '22 May G - 26 May D', price: 9200, perPerson: true, note: 'Direkt ucus, 1s 40dk' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (Stari Grad, luks daire)', pricePerNight: 2200, note: 'Dorcol/Stari Grad, tam donanmli, merkezi konum' }
+    ],
+    dailyFood: 2000,
+    dailyTransport: 400,
+    topPlaces: [
+      { icon: '\u{1F3F0}', name: 'Kalemegdan Kalesi & Parkı', desc: 'Sava-Tuna birlesimi manzarasi' },
+      { icon: '\u{1F6B6}', name: 'Knez Mihailova Caddesi', desc: 'Ana yaya caddesi, kafeler ve dukkanllar' },
+      { icon: '\u{1F3DB}', name: 'Sveti Sava Katedrali', desc: 'Dunyanin en buyuk Ortodoks katedrallerinden' },
+      { icon: '\u{1F3B5}', name: 'Skadarlija', desc: 'Bohem mahallesi, canli muzik ve restoranlar' },
+      { icon: '\u{1F6A2}', name: 'Splavovi (Nehir Barlari)', desc: 'Belgrad\'in meshur yüzen gece klupleri' }
+    ],
+    cafes: [
+      { name: 'Aviator Coffee Explorer', note: 'Specialty coffee, WiFi, laptop dostu' },
+      { name: 'Koffein', note: 'Birden fazla subesi, hizli WiFi' },
+      { name: 'Smart Office Coworking', note: 'Gunluk ~€10, 24/7 erisim' },
+      { name: 'Nova Iskra', note: 'Yaratici coworking, toplanti odalari' }
+    ],
+    description: 'Balkan\'in en canli sehri. 24 saat yasayan kafe kulturu, meshur gece hayati (splavovi), zengin tarihi doku. Digital nomadlar icin mukemmel altyapi. Yemek fiyatlari cok uygun, ozellikle Skadarlija bolgesinde otantik Sirp mutfagi denenmeli.'
+  },
+  {
+    id: 'kotor',
+    name: 'Kotor',
+    country: 'Karadag',
+    region: 'balkan',
+    flag: '\u{1F1F2}\u{1F1EA}',
+    img: 'https://images.unsplash.com/photo-1537075283550-47841ccd5795?w=600&h=300&fit=crop',
+    scores: { cafe: 5.5, safety: 7.5, nightlife: 5, sightseeing: 9, nature: 9.5, food: 7, beauty: 9.5 },
+    weather: { temp: '19-26°C', desc: 'Gunesli, hafif ruzgarli', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Vizesiz (90 gun)',
+    flightDuration: '~5.5s (IST\'den)',
+    flights: [
+      { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5500, perPerson: true, note: 'Izmir\'den direkt ucus yok, Istanbul IST-TIV direkt' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (korfez manzarali)', pricePerNight: 2500, note: 'Kotor korfezi manzarali luks daire, Old Town yakini' }
+    ],
+    dailyFood: 2200,
+    dailyTransport: 450,
+    topPlaces: [
+      { icon: '\u{1F3F0}', name: 'Kotor Kalesi (San Giovanni)', desc: '1350 basamak, korfez manzarasi' },
+      { icon: '\u{1F3D8}', name: 'Kotor Eski Sehir (UNESCO)', desc: 'Ortacag surlarla cevrili tas sokaklar' },
+      { icon: '\u{26F5}', name: 'Kotor Korfezi Tekne Turu', desc: 'Perast, Our Lady of Rocks adasi' },
+      { icon: '\u{1F3D6}', name: 'Budva Plajlari', desc: '30dk mesafede, kumlu plajlar' },
+      { icon: '\u{26F0}', name: 'Lovcen Milli Parki', desc: 'Dag yuruyusu, panoramik manzara' }
+    ],
+    cafes: [
+      { name: 'Forza Cafe', note: 'Eski sehirde, WiFi var ama hiz orta' },
+      { name: 'Bokun Bistro', note: 'Modern mekan, laptop dostu' },
+      { name: 'NEST Coworking (Podgorica)', note: '1.5 saat uzakta ama profesyonel ortam' }
+    ],
+    description: 'UNESCO Dunya Mirasi listesinde, nefes kesen korfez manzarasiyla Avrupa\'nin gizli mucevheri. Kotor Kalesi\'ne tirmanis mutlaka yapilmali. Kafe/coworking altyapisi sinirli — calismak icin Airbnb veya otel WiFi\'ina guvenmeniz gerekebilir. Ama dogasi ve tarihi dokusuyla gorsel soleni garanti.'
+  },
+  {
+    id: 'saraybosna',
+    name: 'Saraybosna',
+    country: 'Bosna Hersek',
+    region: 'balkan',
+    flag: '\u{1F1E7}\u{1F1E6}',
+    img: 'https://images.unsplash.com/photo-1570831709673-03320e9d734f?w=600&h=300&fit=crop',
+    scores: { cafe: 7, safety: 7.5, nightlife: 6, sightseeing: 9, nature: 7, food: 8.5, beauty: 8.5 },
+    weather: { temp: '15-23°C', desc: 'Ilik, yagmur ihtimali', icon: '\u{1F326}' },
+    visa: 'Vizesiz (90 gun)',
+    flightDuration: '~4.5s (IST\'den)',
+    flights: [
+      { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5800, perPerson: true, note: 'Izmir\'den direkt ucus yok, Istanbul IST-SJJ direkt' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (Bascarsija yakini, luks)', pricePerNight: 1600, note: 'Eski sehir merkezinde genis daire, modern doseme' }
+    ],
+    dailyFood: 1800,
+    dailyTransport: 350,
+    topPlaces: [
+      { icon: '\u{1F54C}', name: 'Bascarsija (Eski Carsi)', desc: 'Osmanli donemi carsisi, el sanatlari' },
+      { icon: '\u{1F3DB}', name: 'Latin Koprüsü', desc: 'I. Dunya Savasi\'nin basladigi yer' },
+      { icon: '\u{1F54C}', name: 'Gazi Husrev Bey Camii', desc: '16. yuzyil Osmanli mimari saheseri' },
+      { icon: '\u{26F0}', name: 'Trebevic Dag Teleferigi', desc: 'Sehir panoramasi, yuruyus parkurlari' },
+      { icon: '\u{1F3DB}', name: 'Tunel Muzesi', desc: 'Bosna Savasi donemi yasam tuneli' }
+    ],
+    cafes: [
+      { name: 'Kaffe Tansen', note: 'Specialty coffee, laptop dostu, hizli WiFi' },
+      { name: 'Ministry of Cejf', note: 'Modern kafe, coworking alani' },
+      { name: 'Kawa Coffee', note: 'Bascarsija yakininda, sakin ortam' }
+    ],
+    description: 'Dogu ile Bati\'nin bulusma noktasi. Osmanli, Avusturya-Macaristan ve modern etkilerin ic ice gectigi essiz atmosfer. Bascarsija\'da Bosna kahvesi icmek basli basina bir deneyim. En ucuz Balkan destinasyonu — yemek ve konaklama fiyatlari cok makul. Tarihi ağır ama o kadar da etkileyici.'
+  },
+  {
+    id: 'tiran',
+    name: 'Tiran',
+    country: 'Arnavutluk',
+    region: 'balkan',
+    flag: '\u{1F1E6}\u{1F1F1}',
+    img: 'https://images.unsplash.com/photo-1632353913765-9b56b7b4bd55?w=600&h=300&fit=crop',
+    scores: { cafe: 8, safety: 5.5, nightlife: 7, sightseeing: 6, nature: 6.5, food: 7, beauty: 6.5 },
+    weather: { temp: '19-27°C', desc: 'Sicak ve gunesli', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Vizesiz (90 gun)',
+    flightDuration: '~3.5s (IST\'den)',
+    flights: [
+      { airline: 'THY', type: 'Direkt (IST)', dates: '20 May G - 24 May D', price: 5000, perPerson: true, note: 'Izmir\'den direkt ucus yok, Istanbul IST-TIA direkt' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (Blloku, luks)', pricePerNight: 1700, note: 'Blloku mahallesi, yeni bina, tam donanmli' }
+    ],
+    dailyFood: 1800,
+    dailyTransport: 350,
+    topPlaces: [
+      { icon: '\u{1F3D9}', name: 'Skanderbeg Meydani', desc: 'Sehrin kalbi, renkli binalar' },
+      { icon: '\u{1F3A8}', name: 'Bunk\'Art 1 & 2', desc: 'Eski sinaklar sanat muzesine donusmus' },
+      { icon: '\u{1F6CD}', name: 'Blloku Mahallesi', desc: 'Kafeler, barlar, sokak sanati' },
+      { icon: '\u{26F0}', name: 'Dajti Dagi Teleferigi', desc: 'Sehir panoramasi, restoran' },
+      { icon: '\u{1F3D6}', name: 'Durres Plaji (35dk)', desc: 'En yakin plaj secenegi' }
+    ],
+    cafes: [
+      { name: 'Destil Creative Hub', note: 'Coworking + kafe, nomad toplulugu aktif' },
+      { name: 'Coolab', note: 'Profesyonel coworking, gunluk ~€8' },
+      { name: 'Sophie Caffe (Blloku)', note: 'Genis mekan, WiFi, priz bol' },
+      { name: 'Mon Cheri', note: 'Blloku\'nun populer calisma mekani' }
+    ],
+    description: 'Avrupa\'nin en hizli degisen sehri. Blloku mahallesi digital nomadlarin yeni gozdesi — her kosebasinda kafe, coworking ve bar. Fiyatlar Balkan\'in en uygunlarinda. Estetik olarak diger sehirler kadar gosterisli degil ama enerjisi ve kafesi calisma tatili icin ideal. Durres plaji 35dk mesafede bonus.'
+  },
+  {
+    id: 'antalya',
+    name: 'Antalya (Kaleici)',
+    country: 'Turkiye',
+    region: 'turkiye',
+    flag: '\u{1F1F9}\u{1F1F7}',
+    img: 'https://images.unsplash.com/photo-1768123679333-844df7e7ad1a?w=600&h=300&fit=crop',
+    scores: { cafe: 6.5, safety: 6.5, nightlife: 7, sightseeing: 9, nature: 8, food: 9, beauty: 9 },
+    weather: { temp: '20-28°C', desc: 'Sicak, gunesli, ideal', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt ici',
+    flightDuration: 'Arabayla ~6s',
+    flights: [
+      { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tum tatil boyunca', price: 8000, perPerson: false, note: 'Izmir-Antalya ~6s surus, 4 gun kiralama + yakıt dahil' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (Kaaleici, tas ev)', pricePerNight: 2800, note: 'Restore edilmis tarihi tas ev, bahceli, deniz yakini' }
+    ],
+    dailyFood: 2800,
+    dailyTransport: 0,
+    topPlaces: [
+      { icon: '\u{1F3DB}', name: 'Kaleici Eski Sehir', desc: 'Roma, Bizans, Osmanli katmanlari' },
+      { icon: '\u{1F3D6}', name: 'Konyaalti Plaji', desc: 'Sehir merkezinde uzun sahil seridi' },
+      { icon: '\u{1F3DB}', name: 'Aspendos Antik Tiyatro', desc: 'Dunyanin en iyi korunmus Roma tiyatrosu' },
+      { icon: '\u{1F4A7}', name: 'Duden Selalesi', desc: 'Denize dokulen selale' },
+      { icon: '\u{1F3DB}', name: 'Perge / Side Antik Kent', desc: 'Gunubirlik antik kent gezisi' }
+    ],
+    cafes: [
+      { name: 'Simena Cafe', note: 'Kaleici icinde, deniz manzarali, WiFi' },
+      { name: 'Coffee Lab Antalya', note: 'Specialty coffee, modern mekan' },
+      { name: 'ATÖLYE Coworking', note: 'Profesyonel coworking, gunluk ~150 TL' },
+      { name: 'Pia Botanica', note: 'Bahceli kafe, sakin ortam' }
+    ],
+    description: 'Turkiye\'nin en populer tatil sehri ama Kaleici bolgesinde tamamen farkli bir deneyim: Roma donemi surlar, dar sokaklar, tarihi tas evler. Izmir\'den arabayla ~6 saatlik keyifli yolculuk. Antik kentler, selale, plaj hepsi yakin. Yemek cesitliligi ve kalitesi ust duzey. Kafe altyapisi gelismekte ama Belgrad seviyesinde degil.'
+  },
+  {
+    id: 'bodrum',
+    name: 'Bodrum',
+    country: 'Turkiye',
+    region: 'turkiye',
+    flag: '\u{1F1F9}\u{1F1F7}',
+    img: 'https://images.unsplash.com/photo-1583061386694-e364c84ba31d?w=600&h=300&fit=crop',
+    scores: { cafe: 6, safety: 7.5, nightlife: 9, sightseeing: 7, nature: 8.5, food: 8, beauty: 9 },
+    weather: { temp: '20-27°C', desc: 'Gunesli, hafif ruzgarli', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt ici',
+    flightDuration: 'Arabayla ~3.5s',
+    flights: [
+      { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tum tatil boyunca', price: 6500, perPerson: false, note: 'Izmir-Bodrum ~3.5s surus, 4 gun kiralama + yakıt dahil' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (marina yakini, luks)', pricePerNight: 3000, note: 'Merkez veya Bitez, havuzlu/deniz manzarali villa' }
+    ],
+    dailyFood: 3000,
+    dailyTransport: 0,
+    topPlaces: [
+      { icon: '\u{1F3F0}', name: 'Bodrum Kalesi & Sualti Muzesi', desc: 'St. Peter Kalesi, antik batiklar' },
+      { icon: '\u{1F3D6}', name: 'Bitez Plaji', desc: 'Sakin, surfing, aile dostu' },
+      { icon: '\u{26F5}', name: 'Tekne Turu (12 Ada)', desc: 'Gunluk mavi tur, koylar' },
+      { icon: '\u{1F3DB}', name: 'Bodrum Antik Tiyatro', desc: 'Korfez manzarali amfitiyatro' },
+      { icon: '\u{1F37A}', name: 'Bodrum Bar Sokak', desc: 'Gece hayati merkezi' }
+    ],
+    cafes: [
+      { name: 'Sait Kirtasiye & Coffee', note: 'Hipster mekan, WiFi, priz' },
+      { name: 'Bitez Calisma Kafeleri', note: 'Sahil kenarinda sakin kafeler' },
+      { name: 'Musto Cafe', note: 'Marina manzarali, laptop dostu' }
+    ],
+    description: 'Turkiye\'nin St. Tropez\'i. Mayis\'ta henuz kalabalik degil, fiyatlar makul. Gece hayati Turkiye\'nin en iyilerinden. Plajlar, koylar, tekne turlari muhtesem. Kafe altyapisi calisma icin orta seviye — otel/Airbnb WiFi\'i daha guvenilir. Izmir\'den 40dk ucus buyuk avantaj.'
+  },
+  {
+    id: 'alacati',
+    name: 'Alacati / Cesme',
+    country: 'Turkiye',
+    region: 'turkiye',
+    flag: '\u{1F1F9}\u{1F1F7}',
+    img: 'https://images.unsplash.com/photo-1680622349260-d0f9e83ca972?w=600&h=300&fit=crop',
+    scores: { cafe: 7.5, safety: 8.5, nightlife: 7.5, sightseeing: 6.5, nature: 8, food: 9, beauty: 9 },
+    weather: { temp: '20-27°C', desc: 'Gunesli, ruzgarli (sorf icin ideal)', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt ici',
+    flightDuration: 'Arabayla ~1.5s',
+    flights: [
+      { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tum tatil boyunca', price: 5500, perPerson: false, note: 'Izmir-Cesme ~1.5s surus, 4 gun kiralama + yakıt dahil' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (Alacati tas ev)', pricePerNight: 3500, note: 'Alacati merkez, bahceli tas ev, premium dekorasyon' }
+    ],
+    dailyFood: 3000,
+    dailyTransport: 0,
+    topPlaces: [
+      { icon: '\u{1F3E0}', name: 'Alacati Tas Sokaklari', desc: 'Renkli butikler, galeri, kafeler' },
+      { icon: '\u{1F3C4}', name: 'Alacati Surf Merkezi', desc: 'Dunya capinda windsurf spotlari' },
+      { icon: '\u{1F3D6}', name: 'Ilica Plaji', desc: 'Sicak su kaynaklarli kumlu plaj' },
+      { icon: '\u{1F37D}', name: 'Cesme Balik Restoranlari', desc: 'Taze deniz urunleri, meyhane kulturu' },
+      { icon: '\u{1F3B5}', name: 'Cesme Marina & Barlar', desc: 'Yaz gecelerinin merkezi' }
+    ],
+    cafes: [
+      { name: 'Petra Coffee Roastery', note: 'Specialty coffee, genis mekan, WiFi' },
+      { name: 'Alacati Muhallebicisi yanindaki kafeler', note: 'Sokak ustu, laptop dostu' },
+      { name: 'Wild Coffee Alacati', note: 'Modern, priz cok, sessiz ortam' }
+    ],
+    description: 'Izmir\'e en yakin secenek — arabayla sadece 1.5 saat. Alacati\'nin tas sokaklari, butik kafeleri ve ruzgarli plajlari Mayis\'ta en guzel halinde (henuz kalabalik degil). Yemek fiyatlari diger Turkiye seceneklerinden biraz yuksek ama kalite karsiliigi. Kafe kulturu guclu, calisma icin iyi. Araba kiralamayla Cesme, Ilica, Urla tur yapilabilir.'
+  },
+  {
+    id: 'kas',
+    name: 'Kas',
+    country: 'Turkiye',
+    region: 'turkiye',
+    flag: '\u{1F1F9}\u{1F1F7}',
+    img: 'https://images.unsplash.com/photo-1660675587832-4dc3ae3147a4?w=600&h=300&fit=crop',
+    scores: { cafe: 6, safety: 8.5, nightlife: 5, sightseeing: 8, nature: 10, food: 8, beauty: 9.5 },
+    weather: { temp: '21-28°C', desc: 'Sicak, gunesli, deniz 22°C', icon: '\u{2600}\u{FE0F}' },
+    visa: 'Yurt ici',
+    flightDuration: 'Arabayla ~7s',
+    flights: [
+      { airline: 'Araba Kiralama', type: 'Kiralık Arac', dates: 'Tum tatil boyunca', price: 9000, perPerson: false, note: 'Izmir-Kas ~7s surus, 4 gun kiralama + yakıt dahil' }
+    ],
+    accommodation: [
+      { type: 'Airbnb (deniz manzarali, luks)', pricePerNight: 2200, note: 'Terasli, deniz manzarali, merkeze yurume mesafesi' }
+    ],
+    dailyFood: 2500,
+    dailyTransport: 0,
+    topPlaces: [
+      { icon: '\u{1F3DB}', name: 'Likya Kaya Mezarlari', desc: 'Kas\'in simgesi, sehir icinde antik mezarlar' },
+      { icon: '\u{1F3CA}', name: 'Kekova Batin Sehir', desc: 'Tekne turu ile sualti antik sehir' },
+      { icon: '\u{1F3D6}', name: 'Kapitas Plaji', desc: 'Turkiye\'nin en guzel plajlarindan' },
+      { icon: '\u{1F30A}', name: 'Mavi Magara', desc: 'Tekne ile ulasilan dogal magara' },
+      { icon: '\u{1F6B6}', name: 'Likya Yolu Yuruyusleri', desc: 'Dunyanin en iyi 10 yuruyus rotasindan' }
+    ],
+    cafes: [
+      { name: 'Corner Cafe Kas', note: 'Sahil kenarinda, WiFi, laptop dostu' },
+      { name: 'Cafe Mola', note: 'Merkezi konum, sakin ortam' },
+      { name: 'Hideaway Cafe', note: 'Terasli, manzarali calisma alani' }
+    ],
+    description: 'Turkiye\'nin en huzurlu tatil kasabasi. Doga skoru 10/10 — Kapitas Plaji, Kekova Batik Sehir, Likya Yolu hepsi burada. Gece hayati sinirli ama kasaba atmosferi cok samimi. Kafe altyapisi kucuk ama yeterli. Dalaman\'dan transfer (2.5s) dezavantaj, ama varildiginda odul buyuk. Mayis\'ta henuz kalabalik degil, fiyatlar makul.'
+  }
+];
+
+// ============== HELPERS ==============
+function getOverallScore(c) {
+  const w = { cafe: 0.25, safety: 0.1, nightlife: 0.1, sightseeing: 0.15, nature: 0.1, food: 0.1, beauty: 0.1, cost: 0.1 };
+  const s = c.scores;
+  const metricScore = s.cafe*w.cafe + s.safety*w.safety + s.nightlife*w.nightlife +
+    s.sightseeing*w.sightseeing + s.nature*w.nature + s.food*w.food + s.beauty*w.beauty;
+  // Cost score: cheaper = higher score (inverse, max 70k budget)
+  const totalCost = getTotalCost(c, 4);
+  const costScore = Math.max(0, 10 - (totalCost / 7000));
+  return +(metricScore + costScore * w.cost).toFixed(1);
+}
+
+function getPreferredFlight(c) {
+  // En ucuz degil, mid-range ucus secimi (medyan veya 2. en ucuz)
+  const prices = c.flights.map(f => f.perPerson ? f.price : f.price / 2).sort((a, b) => a - b);
+  if (prices.length >= 3) return prices[Math.floor(prices.length / 2)]; // medyan
+  if (prices.length === 2) return prices[1]; // 2. secenek
+  return prices[0];
+}
+
+function getPreferredAccom(c) {
+  // Luks Airbnb fiyati
+  return c.accommodation[0].pricePerNight;
+}
+
+// Geriye uyumluluk icin eski isimleri de tut
+function getCheapestFlight(c) { return getPreferredFlight(c); }
+function getCheapestAccom(c) { return getPreferredAccom(c); }
+
+function getTotalCost(c, days) {
+  const flight2 = getPreferredFlight(c) * 2;
+  const accom = getPreferredAccom(c) * (days - 1);
+  const food = c.dailyFood * days;
+  const transport = c.dailyTransport * days;
+  return flight2 + accom + food + transport;
+}
+
+function formatMoney(n) {
+  return n.toLocaleString('tr-TR') + ' TL';
+}
+
+function scoreColor(s) {
+  if (s >= 8) return 'var(--green)';
+  if (s >= 6) return 'var(--blue)';
+  if (s >= 4) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function budgetClass(total) {
+  if (total <= 40000) return 'budget-ok';
+  if (total <= 60000) return 'budget-warn';
+  return 'budget-over';
+}
+
+// ============== TAB SWITCHING ==============
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'charts') renderCharts();
+  if (name === 'budget') renderBudget(currentDuration);
+  if (name === 'compare') renderCompareTable();
+  if (name === 'weather') renderWeather();
+}
+
+// ============== CARDS ==============
+function renderCards(data) {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  data.forEach(c => {
+    const score = getOverallScore(c);
+    const cost4 = getTotalCost(c, 4);
+    const card = document.createElement('div');
+    card.className = 'city-card';
+    card.onclick = () => openModal(c.id);
+    card.innerHTML = `
+      <div class="card-flag">${c.flag}</div>
+      <div class="card-badge">${score}/10</div>
+      <div class="card-img" style="background-image:url('${c.img}');background:linear-gradient(135deg,#1e1b4b,#312e81) center/cover;background-image:url('${c.img}');background-size:cover;background-position:center"></div>
+      <div class="card-body">
+        <div class="card-title">${c.name}</div>
+        <div class="card-country">${c.flag} ${c.country} · ${c.flightDuration} · ${c.visa}</div>
+        <div class="card-score">
+          <span class="score-num" style="color:${scoreColor(score)}">${score}</span>
+          <div class="score-bar"><div class="score-fill" style="width:${score*10}%;background:${scoreColor(score)}"></div></div>
+        </div>
+        <div class="card-stats">
+          <div class="stat"><div class="stat-label">Toplam (4g, 2 kisi)</div><div class="stat-value">${formatMoney(cost4)}</div></div>
+          <div class="stat"><div class="stat-label">Ulasim (2 kisi)</div><div class="stat-value">${formatMoney(getCheapestFlight(c) * 2)}</div></div>
+          <div class="stat"><div class="stat-label">Kafe Skoru</div><div class="stat-value" style="color:${scoreColor(c.scores.cafe)}">${c.scores.cafe}/10</div></div>
+          <div class="stat"><div class="stat-label">Gece Hayati</div><div class="stat-value" style="color:${scoreColor(c.scores.nightlife)}">${c.scores.nightlife}/10</div></div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function applyFilters() {
+  const region = document.getElementById('filterRegion').value;
+  const minCafe = +document.getElementById('filterCafe').value;
+  const maxBudget = +document.getElementById('filterBudget').value;
+  const sortBy = document.getElementById('sortBy').value;
+
+  document.getElementById('cafeVal').textContent = minCafe + '+';
+  document.getElementById('budgetVal').textContent = formatMoney(maxBudget);
+
+  let filtered = cities.filter(c => {
+    if (region !== 'all' && c.region !== region) return false;
+    if (c.scores.cafe < minCafe) return false;
+    if (getTotalCost(c, 4) > maxBudget) return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    switch (sortBy) {
+      case 'cost': return getTotalCost(a, 4) - getTotalCost(b, 4);
+      case 'cafe': return b.scores.cafe - a.scores.cafe;
+      case 'nightlife': return b.scores.nightlife - a.scores.nightlife;
+      case 'safety': return b.scores.safety - a.scores.safety;
+      case 'sightseeing': return b.scores.sightseeing - a.scores.sightseeing;
+      default: return getOverallScore(b) - getOverallScore(a);
+    }
+  });
+
+  renderCards(filtered);
+}
+
+// ============== MODAL ==============
+function openModal(id) {
+  const c = cities.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.flag + ' ' + c.name;
+  document.getElementById('modalCountry').textContent = c.country + ' · ' + c.visa + ' · Ucus: ' + c.flightDuration;
+
+  let html = `<p style="margin-bottom:20px;color:var(--text-dim);font-size:14px;line-height:1.7">${c.description}</p>`;
+
+  // Flights
+  html += `<div class="modal-section"><h3>Ulasim Secenekleri (2 kisi toplam)</h3>`;
+  c.flights.forEach(f => {
+    const totalPrice = f.perPerson ? f.price * 2 : f.price;
+    html += `<div class="flight-option">
+      <div>
+        <div class="flight-airline">${f.airline} — ${f.type}</div>
+        <div class="flight-route">${f.dates} · ${f.note}</div>
+      </div>
+      <div class="flight-price">${formatMoney(totalPrice)}<small>2 kisi G/D toplam</small></div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Accommodation
+  html += `<div class="modal-section"><h3>Konaklama Secenekleri (gecelik, 2 kisi)</h3>`;
+  c.accommodation.forEach(a => {
+    html += `<div class="accom-option">
+      <div class="accom-type">${a.type}</div>
+      <div class="accom-detail">${a.note}</div>
+      <div class="accom-price">${formatMoney(a.pricePerNight)} / gece</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Daily costs
+  html += `<div class="modal-section"><h3>Gunluk Harcamalar (2 kisi tahmini)</h3>
+    <div class="accom-option">
+      <div class="calc-row"><span>Yeme-icme</span><span>${formatMoney(c.dailyFood)} / gun</span></div>
+      <div class="calc-row"><span>Ulasim (sehir ici)</span><span>${formatMoney(c.dailyTransport)} / gun</span></div>
+      <div class="calc-row"><span>Toplam gunluk</span><span style="font-weight:700">${formatMoney(c.dailyFood + c.dailyTransport)} / gun</span></div>
+    </div>
+  </div>`;
+
+  // Top places
+  html += `<div class="modal-section"><h3>Gezilecek Yerler</h3><ul class="place-list">`;
+  c.topPlaces.forEach(p => {
+    html += `<li><span class="place-icon">${p.icon}</span><div><strong>${p.name}</strong><br><span style="color:var(--text-dim);font-size:12px">${p.desc}</span></div></li>`;
+  });
+  html += '</ul></div>';
+
+  // Cafes
+  html += `<div class="modal-section"><h3>Kafe & Coworking</h3><ul class="cafe-list">`;
+  c.cafes.forEach(cf => {
+    html += `<li><span style="color:var(--accent)">&#9679;</span><div><strong>${cf.name}</strong> — <span style="color:var(--text-dim)">${cf.note}</span></div></li>`;
+  });
+  html += '</ul></div>';
+
+  // Score breakdown
+  html += `<div class="modal-section"><h3>Skor Dagilimi</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
+  const labels = { cafe:'Kafe/Coworking', safety:'Guvenlik', nightlife:'Gece Hayati', sightseeing:'Gezilecek Yer', nature:'Doga/Plaj', food:'Yemek Kulturu', beauty:'Genel Guzellik' };
+  Object.entries(c.scores).forEach(([k, v]) => {
+    html += `<div class="stat"><div class="stat-label">${labels[k]}</div><div class="stat-value" style="color:${scoreColor(v)}">${v}/10</div></div>`;
+  });
+  html += '</div></div>';
+
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ============== COMPARE TABLE ==============
+function renderCompareTable() {
+  const metrics = [
+    { key: 'total4', label: 'Toplam Maliyet (4g)', fn: c => getTotalCost(c, 4), format: formatMoney, lower: true },
+    { key: 'total6', label: 'Toplam Maliyet (6g)', fn: c => getTotalCost(c, 6), format: formatMoney, lower: true },
+    { key: 'flight', label: 'Ulasim (2 kisi)', fn: c => getCheapestFlight(c) * 2, format: formatMoney, lower: true },
+    { key: 'accom', label: 'Konaklama (gece)', fn: c => getCheapestAccom(c), format: formatMoney, lower: true },
+    { key: 'food', label: 'Gunluk Yeme-Icme', fn: c => c.dailyFood, format: formatMoney, lower: true },
+    { key: 'cafe', label: 'Kafe Skoru', fn: c => c.scores.cafe, format: v => v+'/10', lower: false },
+    { key: 'safety', label: 'Guvenlik', fn: c => c.scores.safety, format: v => v+'/10', lower: false },
+    { key: 'nightlife', label: 'Gece Hayati', fn: c => c.scores.nightlife, format: v => v+'/10', lower: false },
+    { key: 'sightseeing', label: 'Gezilecek Yer', fn: c => c.scores.sightseeing, format: v => v+'/10', lower: false },
+    { key: 'nature', label: 'Doga/Plaj', fn: c => c.scores.nature, format: v => v+'/10', lower: false },
+    { key: 'food_s', label: 'Yemek Kulturu', fn: c => c.scores.food, format: v => v+'/10', lower: false },
+    { key: 'beauty', label: 'Guzellik', fn: c => c.scores.beauty, format: v => v+'/10', lower: false },
+    { key: 'overall', label: 'GENEL SKOR', fn: c => getOverallScore(c), format: v => v+'/10', lower: false }
+  ];
+
+  let headHtml = '<th>Metrik</th>';
+  cities.forEach(c => { headHtml += `<th>${c.flag} ${c.name}</th>`; });
+  document.getElementById('compHead').innerHTML = headHtml;
+
+  let bodyHtml = '';
+  metrics.forEach(m => {
+    const vals = cities.map(c => m.fn(c));
+    const best = m.lower ? Math.min(...vals) : Math.max(...vals);
+    const worst = m.lower ? Math.max(...vals) : Math.min(...vals);
+    bodyHtml += `<tr><td style="font-weight:600">${m.label}</td>`;
+    cities.forEach((c, i) => {
+      const v = vals[i];
+      let cls = '';
+      if (v === best) cls = 'best';
+      else if (v === worst) cls = 'worst';
+      bodyHtml += `<td class="${cls}">${m.format(v)}</td>`;
+    });
+    bodyHtml += '</tr>';
+  });
+  document.getElementById('compBody').innerHTML = bodyHtml;
+}
+
+// ============== CHARTS ==============
+let radarChart, costChart, stackedChart, valueChart;
+let selectedRadar = ['belgrad', 'saraybosna', 'antalya'];
+const chartColors = ['#6366f1', '#22c55e', '#f59e0b', '#ec4899', '#14b8a6', '#ef4444', '#3b82f6', '#a855f7'];
+
+function renderCharts() {
+  renderRadarControls();
+  renderRadar();
+  renderCostChart();
+  renderStackedChart();
+  renderValueChart();
+}
+
+function renderRadarControls() {
+  const div = document.getElementById('radarControls');
+  div.innerHTML = '';
+  cities.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'radar-btn' + (selectedRadar.includes(c.id) ? ' active' : '');
+    btn.textContent = c.flag + ' ' + c.name;
+    btn.onclick = () => {
+      if (selectedRadar.includes(c.id)) {
+        selectedRadar = selectedRadar.filter(x => x !== c.id);
+      } else if (selectedRadar.length < 4) {
+        selectedRadar.push(c.id);
+      }
+      renderRadarControls();
+      renderRadar();
+    };
+    div.appendChild(btn);
+  });
+}
+
+function renderRadar() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (radarChart) radarChart.destroy();
+  const labels = ['Kafe', 'Guvenlik', 'Gece Hayati', 'Gezilecek Yer', 'Doga', 'Yemek', 'Guzellik'];
+  const datasets = selectedRadar.map((id, i) => {
+    const c = cities.find(x => x.id === id);
+    return {
+      label: c.name,
+      data: [c.scores.cafe, c.scores.safety, c.scores.nightlife, c.scores.sightseeing, c.scores.nature, c.scores.food, c.scores.beauty],
+      borderColor: chartColors[i],
+      backgroundColor: chartColors[i] + '20',
+      pointBackgroundColor: chartColors[i],
+      borderWidth: 2
+    };
+  });
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      scales: { r: { min: 0, max: 10, ticks: { stepSize: 2, color: '#9ca3af' }, grid: { color: '#2a2e3f' }, pointLabels: { color: '#e4e4e7', font: { size: 12 } } } },
+      plugins: { legend: { labels: { color: '#e4e4e7' } } }
+    }
+  });
+}
+
+function renderCostChart() {
+  const ctx = document.getElementById('costChart').getContext('2d');
+  if (costChart) costChart.destroy();
+  const sorted = [...cities].sort((a, b) => getTotalCost(a, 4) - getTotalCost(b, 4));
+  costChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(c => c.flag + ' ' + c.name),
+      datasets: [{
+        label: 'Toplam (4 gun, 2 kisi)',
+        data: sorted.map(c => getTotalCost(c, 4)),
+        backgroundColor: sorted.map((c, i) => getTotalCost(c, 4) <= 40000 ? '#22c55e80' : getTotalCost(c, 4) <= 60000 ? '#f59e0b80' : '#ef444480'),
+        borderColor: sorted.map((c, i) => getTotalCost(c, 4) <= 40000 ? '#22c55e' : getTotalCost(c, 4) <= 60000 ? '#f59e0b' : '#ef4444'),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => formatMoney(ctx.raw) } }
+      },
+      scales: {
+        x: { ticks: { color: '#9ca3af', callback: v => (v/1000)+'k' }, grid: { color: '#2a2e3f' } },
+        y: { ticks: { color: '#e4e4e7' }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderStackedChart() {
+  const ctx = document.getElementById('stackedChart').getContext('2d');
+  if (stackedChart) stackedChart.destroy();
+  const sorted = [...cities].sort((a, b) => getTotalCost(a, 4) - getTotalCost(b, 4));
+  stackedChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(c => c.flag + ' ' + c.name),
+      datasets: [
+        { label: 'Ulasim (2 kisi)', data: sorted.map(c => getCheapestFlight(c) * 2), backgroundColor: '#6366f1' },
+        { label: 'Konaklama (3 gece)', data: sorted.map(c => getCheapestAccom(c) * 3), backgroundColor: '#22c55e' },
+        { label: 'Yeme-Icme (4 gun)', data: sorted.map(c => c.dailyFood * 4), backgroundColor: '#f59e0b' },
+        { label: 'Ulasim (4 gun)', data: sorted.map(c => c.dailyTransport * 4), backgroundColor: '#ec4899' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#e4e4e7' } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatMoney(ctx.raw) } }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#e4e4e7', maxRotation: 45 }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#9ca3af', callback: v => (v/1000)+'k' }, grid: { color: '#2a2e3f' } }
+      }
+    }
+  });
+}
+
+function renderValueChart() {
+  const ctx = document.getElementById('valueChart').getContext('2d');
+  if (valueChart) valueChart.destroy();
+  valueChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: cities.map((c, i) => ({
+        label: c.name,
+        data: [{ x: getTotalCost(c, 4), y: getOverallScore(c) }],
+        backgroundColor: chartColors[i % chartColors.length],
+        borderColor: chartColors[i % chartColors.length],
+        pointRadius: 10,
+        pointHoverRadius: 14
+      }))
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#e4e4e7' } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatMoney(ctx.raw.x) + ' / ' + ctx.raw.y + ' puan' } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Toplam Maliyet (4g, 2 kisi)', color: '#9ca3af' }, ticks: { color: '#9ca3af', callback: v => (v/1000)+'k' }, grid: { color: '#2a2e3f' } },
+        y: { title: { display: true, text: 'Genel Skor', color: '#9ca3af' }, ticks: { color: '#9ca3af' }, grid: { color: '#2a2e3f' }, min: 5, max: 9 }
+      }
+    }
+  });
+}
+
+// ============== BUDGET CALCULATOR ==============
+let currentDuration = 4;
+
+function setDuration(d) {
+  currentDuration = d;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderBudget(d);
+}
+
+function renderBudget(days) {
+  const grid = document.getElementById('calcGrid');
+  const sorted = [...cities].sort((a, b) => getTotalCost(a, days) - getTotalCost(b, days));
+  grid.innerHTML = '';
+  sorted.forEach(c => {
+    const flight2 = getCheapestFlight(c) * 2;
+    const accom = getCheapestAccom(c) * (days - 1);
+    const food = c.dailyFood * days;
+    const transport = c.dailyTransport * days;
+    const total = flight2 + accom + food + transport;
+    const card = document.createElement('div');
+    card.className = 'calc-card';
+    card.innerHTML = `
+      <h4>${c.flag} ${c.name}</h4>
+      <div class="calc-row"><span>Ulasim (2 kisi)</span><span>${formatMoney(flight2)}</span></div>
+      <div class="calc-row"><span>Konaklama (${days-1} gece, Airbnb)</span><span>${formatMoney(accom)}</span></div>
+      <div class="calc-row"><span>Yeme-Icme (${days} gun)</span><span>${formatMoney(food)}</span></div>
+      <div class="calc-row"><span>Sehir Ici Ulasim (${days} gun)</span><span>${formatMoney(transport)}</span></div>
+      <div class="calc-total">
+        <span>TOPLAM</span>
+        <span class="${budgetClass(total)}">${formatMoney(total)}</span>
+      </div>
+      <div style="text-align:right;font-size:11px;color:var(--text-dim);margin-top:4px">
+        Butcenin %${Math.round(total/700)}\'i
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ============== WEATHER ==============
+function renderWeather() {
+  const grid = document.getElementById('weatherGrid');
+  grid.innerHTML = '';
+  cities.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'weather-card';
+    card.innerHTML = `
+      <div style="font-size:28px;margin-bottom:4px">${c.weather.icon}</div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:4px">${c.flag} ${c.name}</div>
+      <div class="weather-temp">${c.weather.temp}</div>
+      <div class="weather-desc">${c.weather.desc}</div>
+      <div style="margin-top:8px"><span class="tag tag-green">${c.visa}</span></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ============== INIT ==============
+applyFilters();
+</script>
+</body>
+</html>
